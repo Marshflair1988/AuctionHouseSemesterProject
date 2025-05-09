@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BidHive Auction House</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md">
+      <nav
+        class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <a href="index.html" class="text-2xl font-bold text-indigo-600">
+          <img src="assets/BidHive_Logo.png" alt="BidHive Logo" class="h-12" />
+        </a>
+        <div class="hidden md:flex space-x-6">
+          <a href="index.html" class="text-gray-700 hover:text-indigo-600"
+            >Home</a
+          >
+          <a
+            href="pages/listings.html"
+            class="text-gray-700 hover:text-indigo-600"
+            >Listings</a
+          >
+          <a href="pages/about.html" class="text-gray-700 hover:text-indigo-600"
+            >About</a
+          >
+        </div>
+        <div id="auth-buttons" class="hidden md:flex space-x-2">
+          <a
+            href="pages/login.html"
+            class="px-4 py-2 text-indigo-600 hover:text-indigo-800"
+            >Login</a
+          >
+          <a
+            href="pages/register.html"
+            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            >Register</a
+          >
+        </div>
+        <div id="user-menu" class="hidden relative">
+          <button id="user-menu-button" class="flex items-center space-x-2">
+            <img
+              id="user-avatar"
+              src="assets/default-avatar.png"
+              alt="User avatar"
+              class="w-8 h-8 rounded-full" />
+            <span id="user-credits" class="text-green-600 font-medium"></span>
+          </button>
+          <div
+            id="user-dropdown"
+            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+            <a
+              href="pages/profile.html"
+              class="block px-4 py-2 text-gray-700 hover:bg-indigo-100"
+              >Profile</a
+            >
+            <a
+              href="#"
+              id="logout-button"
+              class="block px-4 py-2 text-gray-700 hover:bg-indigo-100"
+              >Logout</a
+            >
+          </div>
+        </div>
+        <button class="md:hidden text-gray-700" id="mobile-menu-button">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden bg-white px-4 pt-2 pb-4 border-t">
+        <a href="index.html" class="block py-2 text-gray-700">Home</a>
+        <a href="pages/listings.html" class="block py-2 text-gray-700"
+          >Listings</a
+        >
+        <a href="pages/about.html" class="block py-2 text-gray-700">About</a>
+        <div class="pt-2 border-t">
+          <a href="pages/login.html" class="block py-2 text-gray-700">Login</a>
+          <a href="pages/register.html" class="block py-2 text-gray-700"
+            >Register</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-grow">
+      <section class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-4 text-center">
+          <h1 class="text-4xl md:text-5xl font-bold mb-3">
+            Welcome to BidHive Auction House
+          </h1>
+          <p class="text-xl mb-6">
+            Discover unique items and place your bids today!
+          </p>
+          <div class="flex justify-center">
+            <a
+              href="pages/listings.html"
+              class="bg-white text-indigo-700 px-6 py-3 rounded-md font-medium hover:bg-gray-100"
+              >Browse Listings</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+          <h2 class="text-3xl font-bold text-center mb-8">How It Works</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+              <div
+                class="bg-indigo-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-user-plus text-2xl text-indigo-600"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Register</h3>
+              <p class="text-gray-600">
+                Create an account with your @stud.noroff.no email to get
+                started.
+              </p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+              <div
+                class="bg-indigo-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-search text-2xl text-indigo-600"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Browse & Bid</h3>
+              <p class="text-gray-600">
+                Find items you love and place bids to participate in auctions.
+              </p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+              <div
+                class="bg-indigo-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-plus-circle text-2xl text-indigo-600"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Create Listings</h3>
+              <p class="text-gray-600">
+                List your own items for auction and watch the bids roll in.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+          <h2 class="text-3xl font-bold text-center mb-8">Featured Listings</h2>
+          <div
+            id="featured-listings"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Listings will be populated here -->
+            <p class="col-span-full text-center text-gray-500">
+              Loading featured listings...
+            </p>
+          </div>
+          <div class="text-center mt-8">
+            <a
+              href="pages/listings.html"
+              class="text-indigo-600 hover:text-indigo-800 font-medium"
+              >View all listings →</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between">
+          <div class="mb-6 md:mb-0">
+            <h3 class="text-xl font-bold mb-2">BidHive</h3>
+            <p class="text-gray-400">Your trusted online auction platform</p>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div>
+              <h4 class="text-lg font-semibold mb-3">Quick Links</h4>
+              <ul class="space-y-2">
+                <li>
+                  <a href="index.html" class="text-gray-400 hover:text-white"
+                    >Home</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="pages/listings.html"
+                    class="text-gray-400 hover:text-white"
+                    >Listings</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="pages/about.html"
+                    class="text-gray-400 hover:text-white"
+                    >About</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold mb-3">Account</h4>
+              <ul class="space-y-2">
+                <li>
+                  <a
+                    href="pages/login.html"
+                    class="text-gray-400 hover:text-white"
+                    >Login</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="pages/register.html"
+                    class="text-gray-400 hover:text-white"
+                    >Register</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="pages/profile.html"
+                    class="text-gray-400 hover:text-white"
+                    >Profile</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold mb-3">Legal</h4>
+              <ul class="space-y-2">
+                <li>
+                  <a href="#" class="text-gray-400 hover:text-white"
+                    >Terms of Service</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="text-gray-400 hover:text-white"
+                    >Privacy Policy</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+          <p>&copy; 2025 BidHive Auction House. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
