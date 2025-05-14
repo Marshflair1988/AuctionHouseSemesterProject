@@ -6,6 +6,7 @@ let totalPages = 1;
 let currentSort = 'created';
 let currentStatus = 'active';
 let currentSearch = '';
+let currentBidListingId = null;
 
 // DOM Elements
 const listingsContainer = document.getElementById('listings-container');
@@ -23,14 +24,26 @@ const listingCount = document.getElementById('listing-count');
 async function fetchListings() {
   try {
     let url = `${API_BASE_URL}/auction/listings?`;
-    url += `_seller=true&_bids=true&_active=${currentStatus === 'active'}`;
-    url += `&sort=${currentSort}&sortOrder=desc`;
+    url += `_seller=true&_bids=true`;
+    // Handle status filter
+    if (currentStatus === 'active') {
+      url += `&_active=true`;
+    } else if (currentStatus === 'ended') {
+      url += `&_active=false`;
+    }
+    // Handle sort filter
+    if (currentSort) {
+      // For 'created' (newest), use descending order
+      const sortOrder = currentSort === 'endsAt' ? 'asc' : 'desc';
+      url += `&sort=${encodeURIComponent(currentSort)}&sortOrder=${sortOrder}`;
+    }
     url += `&limit=12&page=${currentPage}`;
 
     if (currentSearch) {
       url += `&q=${encodeURIComponent(currentSearch)}`;
     }
 
+    console.log('Fetching listings with URL:', url);
     const response = await fetch(url);
     const data = await response.json();
 
@@ -70,24 +83,52 @@ function displayListings(listings) {
 
   // Create HTML string for all listings
   const listingsHTML = listings
-    .map(
-      (listing) => `
-    <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
+    .map((listing) => {
+      const highestBid =
+        listing.bids && listing.bids.length
+          ? Math.max(...listing.bids.map((bid) => bid.amount))
+          : 0;
+      // Calculate time left
+      const endsAt = new Date(listing.endsAt);
+      const now = new Date();
+      let timeLeft = '';
+      const diff = endsAt - now;
+      if (diff <= 0) {
+        timeLeft = 'Ended';
+      } else {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        if (days > 0) {
+          timeLeft = `${days}d ${hours}h left`;
+        } else if (hours > 0) {
+          timeLeft = `${hours}h ${minutes}m left`;
+        } else if (minutes > 0) {
+          timeLeft = `${minutes}m left`;
+        } else {
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          timeLeft = `${seconds}s left`;
+        }
+      }
+      return `
+    <div class="bg-white rounded-lg shadow-md overflow-hidden h-[32rem] flex flex-col">
       <a href="listing-details.html?id=${
         listing.id
       }" class="block flex flex-col h-full">
-        <div class="relative aspect-w-16 aspect-h-9 w-full">
+        <div class="relative w-full h-60 flex-shrink-0">
           <img 
             src="${listing.media?.[0]?.url || '../assets/placeholder.jpg'}" 
             alt="${listing.media?.[0]?.alt || listing.title}"
             class="object-cover w-full h-full"
           />
         </div>
-        <div class="p-4 flex flex-col flex-grow">
+        <div class="p-4 flex flex-col flex-grow min-h-0">
           <h3 class="text-lg font-semibold mb-2 line-clamp-1">${
             listing.title
           }</h3>
-          <p class="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">${
+          <p class="text-gray-600 text-sm mb-2 line-clamp-1 flex-grow">${
             listing.description || ''
           }</p>
           <div class="mt-auto">
@@ -103,24 +144,41 @@ function displayListings(listings) {
                 listing.seller?.name || 'Unknown Seller'
               }</span>
             </div>
+            <div class="text-sm text-red-600 mb-2"><i class="far fa-clock mr-1"></i>${timeLeft}</div>
             <div class="flex justify-between items-center">
               <div class="text-sm text-gray-500">
                 ${listing._count.bids} bids
               </div>
               <div class="text-indigo-600 font-medium">
-                ${listing.bids?.[0]?.amount || 0} credits
+                ${highestBid} credits
               </div>
             </div>
+            ${
+              isAuthenticated
+                ? `<button class="mt-4 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 place-bid-btn" data-listing-id="${listing.id}">Place Bid</button>`
+                : ''
+            }
           </div>
         </div>
       </a>
     </div>
-  `
-    )
+  `;
+    })
     .join('');
 
   // Update the container's content
   listingsContainer.innerHTML = listingsHTML;
+
+  // Add event listeners for all Place Bid buttons
+  if (isAuthenticated) {
+    document.querySelectorAll('.place-bid-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentBidListingId = btn.getAttribute('data-listing-id');
+        openBidModal();
+      });
+    });
+  }
 }
 
 // Update pagination
@@ -133,8 +191,8 @@ function updatePagination(meta) {
   if (meta.previousPage) {
     paginationHTML += `
             <button 
-                class="px-3 py-1 border rounded hover:bg-gray-100"
-                onclick="currentPage = ${meta.previousPage}; fetchListings();"
+                class="px-3 py-1 border rounded hover:bg-gray-100 pagination-btn"
+                data-page="${meta.previousPage}"
             >
                 Previous
             </button>
@@ -150,8 +208,8 @@ function updatePagination(meta) {
   if (meta.nextPage) {
     paginationHTML += `
             <button 
-                class="px-3 py-1 border rounded hover:bg-gray-100"
-                onclick="currentPage = ${meta.nextPage}; fetchListings();"
+                class="px-3 py-1 border rounded hover:bg-gray-100 pagination-btn"
+                data-page="${meta.nextPage}"
             >
                 Next
             </button>
@@ -159,6 +217,17 @@ function updatePagination(meta) {
   }
 
   pagination.innerHTML = paginationHTML;
+
+  // Add event listeners for pagination buttons
+  pagination.querySelectorAll('.pagination-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const page = parseInt(btn.getAttribute('data-page'), 10);
+      if (!isNaN(page)) {
+        currentPage = page;
+        fetchListings();
+      }
+    });
+  });
 }
 
 // Create listing
@@ -276,3 +345,95 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Bid modal logic
+const bidModal = document.getElementById('bid-modal');
+const closeBidModalBtn = document.getElementById('close-bid-modal');
+const bidForm = document.getElementById('bid-form');
+const bidAmountInput = document.getElementById('bid-amount');
+const bidModalError = document.getElementById('bid-modal-error');
+
+function openBidModal() {
+  if (bidModal) {
+    bidModal.classList.remove('hidden');
+    bidAmountInput.value = '';
+    bidModalError.classList.add('hidden');
+    bidModalError.textContent = '';
+  }
+}
+function closeBidModal() {
+  if (bidModal) {
+    bidModal.classList.add('hidden');
+  }
+}
+if (closeBidModalBtn) {
+  closeBidModalBtn.addEventListener('click', closeBidModal);
+}
+if (bidModal) {
+  bidModal.addEventListener('click', (e) => {
+    if (e.target === bidModal) closeBidModal();
+  });
+}
+if (bidForm) {
+  bidForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const amount = parseInt(bidAmountInput.value, 10);
+    if (!amount || amount < 1) {
+      bidModalError.textContent = 'Please enter a valid bid amount.';
+      bidModalError.classList.remove('hidden');
+      return;
+    }
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('You must be logged in to place a bid.');
+      const response = await fetch(
+        `${API_BASE_URL}/auction/listings/${currentBidListingId}/bids`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+          },
+          body: JSON.stringify({ amount }),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.errors?.[0]?.message || 'Failed to place bid');
+      }
+      closeBidModal();
+      fetchListings(); // Refresh listings
+      // --- Begin credits update ---
+      const { getUser, updateUser, authFetch, updateUIForAuth } = await import(
+        './auth.js'
+      );
+      const user = getUser();
+      if (user) {
+        try {
+          const userResponse = await authFetch(
+            `/auction/profiles/${user.name}`
+          );
+          updateUser({ ...user, credits: userResponse.data.credits });
+          updateUIForAuth();
+        } catch (e) {
+          // Optionally log error
+        }
+      }
+      // --- End credits update ---
+      // --- Begin profile refresh if on profile page ---
+      if (window.location.pathname.endsWith('profile.html')) {
+        try {
+          const { initializeProfile } = await import('./profile.js');
+          initializeProfile();
+        } catch (e) {
+          // Optionally log error
+        }
+      }
+      // --- End profile refresh ---
+    } catch (error) {
+      bidModalError.textContent = error.message || 'Failed to place bid.';
+      bidModalError.classList.remove('hidden');
+    }
+  });
+}

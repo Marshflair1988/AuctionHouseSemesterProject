@@ -20,6 +20,7 @@ const endedAuction = document.getElementById('ended-auction');
 const endedInfo = document.getElementById('ended-info');
 const bidHistory = document.getElementById('bid-history');
 const noBids = document.getElementById('no-bids');
+const bidFeedback = document.getElementById('bid-feedback');
 
 // State
 let currentListing = null;
@@ -160,14 +161,23 @@ function displayAuctionStatus() {
   const endDate = new Date(currentListing.endsAt);
   const isEnded = now > endDate;
 
+  // Find the highest bid
+  const highestBid =
+    currentListing.bids && currentListing.bids.length
+      ? Math.max(...currentListing.bids.map((bid) => bid.amount))
+      : 0;
+  const highestBidObj =
+    currentListing.bids && currentListing.bids.length
+      ? currentListing.bids.find((bid) => bid.amount === highestBid)
+      : null;
+
   if (isEnded) {
     if (activeAuction) activeAuction.classList.add('hidden');
     if (endedAuction) {
       endedAuction.classList.remove('hidden');
-      const highestBid = currentListing.bids?.[0];
       if (endedInfo) {
-        endedInfo.textContent = highestBid
-          ? `Sold for ${highestBid.amount} credits to ${highestBid.bidder.name}`
+        endedInfo.textContent = highestBidObj
+          ? `Sold for ${highestBidObj.amount} credits to ${highestBidObj.bidder.name}`
           : 'No bids were placed';
       }
     }
@@ -176,9 +186,7 @@ function displayAuctionStatus() {
     if (activeAuction) {
       activeAuction.classList.remove('hidden');
       if (currentBid) {
-        currentBid.textContent = `${
-          currentListing.bids?.[0]?.amount || 0
-        } credits`;
+        currentBid.textContent = `${highestBid} credits`;
       }
       if (bidCount) {
         bidCount.textContent = currentListing._count.bids;
@@ -189,12 +197,20 @@ function displayAuctionStatus() {
     }
   }
 
-  // Show/hide bid form
+  // Show/hide bid section and bid form
+  const bidSection = document.getElementById('bid-section');
+  if (bidSection) {
+    if (isAuthenticated && !isEnded) {
+      bidSection.classList.remove('hidden');
+    } else {
+      bidSection.classList.add('hidden');
+    }
+  }
   if (bidForm) {
     bidForm.classList.toggle('hidden', !isAuthenticated || isEnded);
   }
   if (minBidInfo) {
-    const minBid = (currentListing.bids?.[0]?.amount || 0) + 1;
+    const minBid = highestBid + 1;
     minBidInfo.textContent = `Minimum bid: ${minBid} credits`;
   }
 }
@@ -274,6 +290,7 @@ async function placeBid(amount) {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
         },
         body: JSON.stringify({ amount }),
       }
@@ -284,6 +301,33 @@ async function placeBid(amount) {
     if (response.ok) {
       currentListing = data.data;
       displayListingDetails();
+      // --- Begin credits update ---
+      const { getUser, updateUser, authFetch, updateUIForAuth } = await import(
+        './auth.js'
+      );
+      const user = getUser();
+      if (user) {
+        try {
+          const userResponse = await authFetch(
+            `/auction/profiles/${user.name}`
+          );
+          updateUser({ ...user, credits: userResponse.data.credits });
+          updateUIForAuth();
+        } catch (e) {
+          // Optionally log error
+        }
+      }
+      // --- End credits update ---
+      // --- Begin profile refresh if on profile page ---
+      if (window.location.pathname.endsWith('profile.html')) {
+        try {
+          const { initializeProfile } = await import('./profile.js');
+          initializeProfile();
+        } catch (e) {
+          // Optionally log error
+        }
+      }
+      // --- End profile refresh ---
       return true;
     } else {
       throw new Error(data.errors?.[0]?.message || 'Failed to place bid');
@@ -344,13 +388,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const amount = parseInt(bidAmount.value);
       if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid bid amount');
+        if (bidFeedback) {
+          bidFeedback.textContent = 'Please enter a valid bid amount.';
+          bidFeedback.className = 'mt-2 text-center text-sm text-red-600';
+        }
         return;
       }
 
       const success = await placeBid(amount);
       if (success) {
         bidAmount.value = '';
+        if (bidFeedback) {
+          bidFeedback.textContent = 'Bid placed successfully!';
+          bidFeedback.className = 'mt-2 text-center text-sm text-green-600';
+          setTimeout(() => {
+            bidFeedback.textContent = '';
+          }, 2000);
+        }
+      } else {
+        if (bidFeedback) {
+          bidFeedback.textContent = 'Failed to place bid. Please try again.';
+          bidFeedback.className = 'mt-2 text-center text-sm text-red-600';
+        }
       }
     });
   }

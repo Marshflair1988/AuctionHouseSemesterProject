@@ -1,4 +1,10 @@
-import { getUser, getToken, updateUser, authFetch } from './auth.js';
+import {
+  getUser,
+  getToken,
+  updateUser,
+  authFetch,
+  updateUIForAuth,
+} from './auth.js';
 
 /**
  * Profile management functionality for BidHive Auction House
@@ -46,6 +52,19 @@ async function initializeProfile() {
     );
     const userData = userResponse.data;
 
+    console.log('API bids array:', userData.bids);
+
+    // Fetch each listing with its bids
+    if (userData.listings && userData.listings.length > 0) {
+      userData.listings = await Promise.all(
+        userData.listings.map((listing) =>
+          authFetch(`/auction/listings/${listing.id}?_bids=true`).then(
+            (res) => res.data
+          )
+        )
+      );
+    }
+
     // Update stored user data with latest from API
     updateUser({
       ...user,
@@ -53,13 +72,49 @@ async function initializeProfile() {
       banner: userData.banner,
       credits: userData.credits,
     });
+    updateUIForAuth();
 
     // Display user profile information
     displayUserProfile(userData);
 
-    // Display user's listings and bids
+    // Display user's listings
     displayUserListings(userData.listings || []);
-    displayUserBids(userData.bids || []);
+
+    // --- Begin workaround for My Bids ---
+    const myBidsContainer = document.getElementById('my-bids-container');
+    if (myBidsContainer) {
+      myBidsContainer.innerHTML = `<div class="text-center py-8 text-gray-500">Loading your bids...</div>`;
+    }
+    let allBids = [];
+    try {
+      // Fetch all listings (could be paginated for large datasets)
+      let page = 1;
+      let hasMore = true;
+      const myName = user.name;
+      while (hasMore) {
+        const listingsResp = await authFetch(
+          `/auction/listings?_bids=true&limit=100&page=${page}`
+        );
+        const listings = listingsResp.data || [];
+        // For each listing, collect bids by this user
+        listings.forEach((listing) => {
+          if (listing.bids && listing.bids.length) {
+            listing.bids.forEach((bid) => {
+              if (bid.bidder && bid.bidder.name === myName) {
+                allBids.push({ ...bid, listing });
+              }
+            });
+          }
+        });
+        // Check if there are more pages
+        hasMore = listings.length === 100;
+        page++;
+      }
+    } catch (e) {
+      console.error('Error fetching all listings for my bids:', e);
+    }
+    displayUserBids(allBids);
+    // --- End workaround for My Bids ---
 
     document.getElementById('profile-loading').classList.add('hidden');
     document.getElementById('profile-content').classList.remove('hidden');
@@ -353,20 +408,28 @@ function createUserListingItem(listing) {
   const isActive = now < endsAt;
   const timeLeft = getTimeLeft(now, endsAt);
 
+  // Debug logs
+  console.log('Listing:', listing);
+  console.log('Listing ID:', listing.id);
+  console.log('Listing bids:', listing.bids);
+  console.log('Listing _count:', listing._count);
+
   // Format bid information
-  const bidCount = listing._count?.bids || 0;
+  const bidCount = listing.bids ? listing.bids.length : 0;
+  console.log('Calculated bidCount:', bidCount);
   const highestBid =
     bidCount > 0
       ? Math.max(...(listing.bids || []).map((bid) => bid.amount))
       : 0;
+  console.log('Calculated highestBid:', highestBid);
 
   item.innerHTML = `
         <div class="flex flex-col sm:flex-row">
             <div class="sm:w-1/4 mb-2 sm:mb-0 sm:mr-4">
-                <div class="aspect-w-16 aspect-h-9">
+                <div>
                     <img src="${imageUrl}" alt="${
     listing.title
-  }" class="object-cover rounded" onerror="this.src='https://via.placeholder.com/150x100?text=Image+Error'">
+  }" class="w-32 h-20 object-cover rounded" onerror="this.src='https://via.placeholder.com/150x100?text=Image+Error'">
                 </div>
             </div>
             <div class="flex-grow">
@@ -431,10 +494,16 @@ function createUserBidItem(bid) {
   }
 
   // Get the main image or use placeholder
-  const imageUrl =
-    bid.listing.media && bid.listing.media.length > 0
-      ? bid.listing.media[0]
-      : 'https://via.placeholder.com/150x100?text=No+Image';
+  let imageUrl = 'https://via.placeholder.com/150x100?text=No+Image';
+  let imageAlt = bid.listing.title;
+  if (bid.listing.media && bid.listing.media.length > 0) {
+    if (typeof bid.listing.media[0] === 'string') {
+      imageUrl = bid.listing.media[0];
+    } else if (bid.listing.media[0].url) {
+      imageUrl = bid.listing.media[0].url;
+      imageAlt = bid.listing.media[0].alt || bid.listing.title;
+    }
+  }
 
   // Format bid date
   const bidDate = new Date(bid.created);
@@ -451,10 +520,8 @@ function createUserBidItem(bid) {
   item.innerHTML = `
         <div class="flex flex-col sm:flex-row">
             <div class="sm:w-1/4 mb-2 sm:mb-0 sm:mr-4">
-                <div class="aspect-w-16 aspect-h-9">
-                    <img src="${imageUrl}" alt="${
-    bid.listing.title
-  }" class="object-cover rounded" onerror="this.src='https://via.placeholder.com/150x100?text=Image+Error'">
+                <div>
+                    <img src="${imageUrl}" alt="${imageAlt}" class="w-32 h-20 object-cover rounded" onerror="this.src='https://via.placeholder.com/150x100?text=Image+Error'">
                 </div>
             </div>
             <div class="flex-grow">

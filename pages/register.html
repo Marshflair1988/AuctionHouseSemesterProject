@@ -52,7 +52,7 @@
               alt="User avatar"
               class="w-8 h-8 rounded-full" />
             <span id="user-name">User</span>
-            <span id="user-credits" class="text-sm text-gray-500"
+            <span id="user-credits" class="text-sm text-green-600 font-bold"
               >0 credits</span
             >
           </button>
@@ -165,11 +165,76 @@
       </div>
     </main>
 
-    <footer class="bg-gray-800 text-white py-6">
-      <div class="container mx-auto px-4 text-center">
-        <p class="text-gray-400">
-          &copy; 2023 BidHive Auction House. All rights reserved.
-        </p>
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between">
+          <div class="mb-6 md:mb-0">
+            <h3 class="text-xl font-bold mb-2">BidHive</h3>
+            <p class="text-gray-400">Your trusted online auction platform</p>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div>
+              <h4 class="text-lg font-semibold mb-3">Quick Links</h4>
+              <ul class="space-y-2">
+                <li>
+                  <a href="../index.html" class="text-gray-400 hover:text-white"
+                    >Home</a
+                  >
+                </li>
+                <li>
+                  <a href="listings.html" class="text-gray-400 hover:text-white"
+                    >Listings</a
+                  >
+                </li>
+                <li>
+                  <a href="about.html" class="text-gray-400 hover:text-white"
+                    >About</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold mb-3">Account</h4>
+              <ul class="space-y-2">
+                <li>
+                  <a href="login.html" class="text-gray-400 hover:text-white"
+                    >Login</a
+                  >
+                </li>
+                <li>
+                  <a href="register.html" class="text-gray-400 hover:text-white"
+                    >Register</a
+                  >
+                </li>
+                <li>
+                  <a href="profile.html" class="text-gray-400 hover:text-white"
+                    >Profile</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold mb-3">Legal</h4>
+              <ul class="space-y-2">
+                <li>
+                  <a href="#" class="text-gray-400 hover:text-white"
+                    >Terms of Service</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="text-gray-400 hover:text-white"
+                    >Privacy Policy</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-gray-700 text-center">
+          <p class="text-gray-400">
+            &copy; 2023 BidHive Auction House. All rights reserved.
+          </p>
+        </div>
       </div>
     </footer>
     <script type="module" src="../js/auth.js"></script>

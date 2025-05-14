@@ -126,6 +126,78 @@ async function authFetch(endpoint, options = {}) {
   return response.json();
 }
 
+// Fetch and render featured listings on the homepage
+async function renderFeaturedListings() {
+  const container = document.getElementById('featured-listings');
+  if (!container) return;
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/auction/listings?_seller=true&_active=true&limit=3`,
+      {
+        headers: {
+          'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+        },
+      }
+    );
+    console.log('Featured listings API response:', response);
+    const data = await response.json();
+    console.log('Featured listings parsed data:', data);
+    const listings = data.data || [];
+    console.log('Listings array:', listings);
+    container.innerHTML = '';
+    listings.slice(0, 3).forEach((listing) => {
+      const card = document.createElement('div');
+      card.className =
+        'bg-white rounded-lg shadow-md overflow-hidden flex flex-col cursor-pointer transition hover:shadow-lg';
+      const imageUrl =
+        listing.media && listing.media.length > 0 && listing.media[0].url
+          ? listing.media[0].url
+          : 'https://via.placeholder.com/400x250?text=No+Image';
+      card.innerHTML = `
+        <a href="pages/listing-details.html?id=${
+          listing.id
+        }" class="block h-full">
+          <img src="${imageUrl}" alt="${
+        listing.title
+      }" class="w-full h-48 object-cover">
+          <div class="p-4 flex flex-col flex-grow">
+            <h3 class="font-semibold text-lg mb-2 line-clamp-1">${
+              listing.title
+            }</h3>
+            <p class="text-gray-600 text-sm mb-4 flex-grow line-clamp-3">${
+              listing.description || 'No description provided.'
+            }</p>
+            <div class="flex items-center mt-auto">
+              <img src="${
+                listing.seller?.avatar?.url || 'assets/default-avatar.png'
+              }" alt="${
+        listing.seller?.name || 'User'
+      }" class="w-8 h-8 rounded-full mr-2">
+              <span class="text-gray-700 text-sm">${
+                listing.seller?.name || 'Unknown'
+              }</span>
+            </div>
+          </div>
+        </a>
+      `;
+      container.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Error loading featured listings:', error);
+    container.innerHTML =
+      '<div class="text-red-600">Failed to load featured listings.</div>';
+  }
+}
+
+// Only run featured listings on homepage
+if (
+  window.location.pathname.endsWith('index.html') ||
+  window.location.pathname === '/' ||
+  window.location.pathname === '/index.html'
+) {
+  document.addEventListener('DOMContentLoaded', renderFeaturedListings);
+}
+
 export {
   checkAuth,
   isAuthenticated,
@@ -135,4 +207,5 @@ export {
   getToken,
   updateUser,
   authFetch,
+  updateUIForAuth,
 };
