@@ -1,4 +1,11 @@
-import { API_BASE_URL, isAuthenticated, currentUser } from './auth.js';
+import {
+  API_BASE_URL,
+  isAuthenticated,
+  currentUser,
+  checkAuth,
+} from './auth.js';
+
+checkAuth();
 
 // DOM Elements
 const profileContent = document.getElementById('profile-content');
@@ -17,17 +24,20 @@ const userBids = document.getElementById('user-bids');
 
 // Fetch user profile
 async function fetchUserProfile() {
-  if (!isAuthenticated) {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (!token || !user) {
     window.location.href = 'login.html';
     return;
   }
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/auction/profiles/${currentUser.name}?_listings=true&_bids=true`,
+      `${API_BASE_URL}/auction/profiles/${user.name}?_listings=true&_bids=true`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
+          'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
         },
       }
     );
@@ -169,14 +179,17 @@ function displayBids(bids) {
 
 // Update profile
 async function updateProfile(formData) {
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
   try {
     const response = await fetch(
-      `${API_BASE_URL}/auction/profiles/${currentUser.name}`,
+      `${API_BASE_URL}/auction/profiles/${user.name}`,
       {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
+          'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
         },
         body: JSON.stringify(formData),
       }
@@ -186,7 +199,7 @@ async function updateProfile(formData) {
 
     if (response.ok) {
       // Update local storage
-      const updatedUser = { ...currentUser, ...data.data };
+      const updatedUser = { ...user, ...data.data };
       localStorage.setItem('user', JSON.stringify(updatedUser));
 
       // Refresh profile
@@ -231,11 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       // Add avatar if provided
+      const user = JSON.parse(localStorage.getItem('user'));
       const avatarUrl = avatarInput.value.trim();
       if (avatarUrl) {
         formData.avatar = {
           url: avatarUrl,
-          alt: `${currentUser.name}'s avatar`,
+          alt: `${user.name}'s avatar`,
         };
       }
 
@@ -244,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bannerUrl) {
         formData.banner = {
           url: bannerUrl,
-          alt: `${currentUser.name}'s banner`,
+          alt: `${user.name}'s banner`,
         };
       }
 
