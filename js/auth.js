@@ -93,5 +93,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Export functions for use in other files
-export { checkAuth, isAuthenticated, currentUser, API_BASE_URL };
+function getUser() {
+  return JSON.parse(localStorage.getItem('user'));
+}
+
+function getToken() {
+  return localStorage.getItem('token');
+}
+
+function updateUser(user) {
+  localStorage.setItem('user', JSON.stringify(user));
+}
+
+async function authFetch(endpoint, options = {}) {
+  const token = getToken();
+  const apiKey = 'aa2b815e-2edb-4047-8ddd-2503d905bff6';
+  const base = API_BASE_URL;
+  const url = endpoint.startsWith('http')
+    ? endpoint
+    : `${base}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    'X-Noroff-API-Key': apiKey,
+    ...(options.headers || {}),
+  };
+  const response = await fetch(url, { ...options, headers });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.errors?.[0]?.message || response.statusText);
+  }
+  return response.json();
+}
+
+export {
+  checkAuth,
+  isAuthenticated,
+  currentUser,
+  API_BASE_URL,
+  getUser,
+  getToken,
+  updateUser,
+  authFetch,
+};

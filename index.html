@@ -29,7 +29,7 @@
             >About</a
           >
         </div>
-        <div class="flex space-x-2">
+        <div id="auth-buttons" class="flex space-x-2">
           <a
             href="pages/login.html"
             class="px-4 py-2 text-indigo-600 hover:text-indigo-800"
@@ -40,6 +40,35 @@
             class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
             >Register</a
           >
+        </div>
+        <div id="user-menu" class="hidden">
+          <button
+            id="user-menu-button"
+            class="flex items-center space-x-2 text-gray-700 hover:text-indigo-600">
+            <img
+              id="user-avatar"
+              src="assets/default-avatar.png"
+              alt="User avatar"
+              class="w-8 h-8 rounded-full" />
+            <span id="user-name">User</span>
+            <span id="user-credits" class="text-sm text-gray-500"
+              >0 credits</span
+            >
+          </button>
+          <div
+            id="user-dropdown"
+            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+            <a
+              href="pages/profile.html"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >Profile</a
+            >
+            <button
+              id="logout-button"
+              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              Logout
+            </button>
+          </div>
         </div>
         <button class="md:hidden text-gray-700">
           <i class="fas fa-bars"></i>
@@ -206,5 +235,6 @@
         </div>
       </div>
     </footer>
+    <script type="module" src="js/auth.js"></script>
   </body>
 </html>
