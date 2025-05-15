@@ -39,31 +39,69 @@ async function fetchListings() {
     }
     url += `&limit=12&page=${currentPage}`;
 
-    if (currentSearch) {
-      url += `&q=${encodeURIComponent(currentSearch)}`;
+    // Add search query if it exists
+    if (currentSearch && currentSearch.trim()) {
+      url += `&search=${encodeURIComponent(currentSearch.trim())}`;
     }
 
+    console.log('Current search value:', currentSearch);
     console.log('Fetching listings with URL:', url);
-    const response = await fetch(url);
-    const data = await response.json();
 
-    if (response.ok) {
-      displayListings(data.data);
-      updatePagination(data.meta);
-      if (listingCount) {
-        listingCount.textContent = data.meta.totalCount;
-      }
-    } else {
-      throw new Error(data.errors?.[0]?.message || 'Failed to fetch listings');
+    const response = await fetch(url, {
+      headers: {
+        'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('API Error:', errorData);
+      throw new Error(
+        errorData.errors?.[0]?.message || 'Failed to fetch listings'
+      );
+    }
+
+    const data = await response.json();
+    console.log('Received data:', data);
+    console.log('Number of listings:', data.data.length);
+    console.log('Search term:', currentSearch);
+
+    // Filter listings based on search term
+    let filteredListings = data.data;
+    if (currentSearch && currentSearch.trim()) {
+      const searchTerm = currentSearch.trim().toLowerCase();
+      filteredListings = data.data.filter(
+        (listing) =>
+          listing.title.toLowerCase().includes(searchTerm) ||
+          listing.description.toLowerCase().includes(searchTerm) ||
+          listing.tags.some((tag) => tag.toLowerCase().includes(searchTerm)) ||
+          (listing.seller &&
+            listing.seller.name.toLowerCase().includes(searchTerm))
+      );
+      console.log('Filtered listings:', filteredListings.length);
+    }
+
+    displayListings(filteredListings);
+    updatePagination({
+      ...data.meta,
+      totalCount: filteredListings.length,
+      pageCount: Math.ceil(filteredListings.length / 12),
+    });
+    if (listingCount) {
+      listingCount.textContent = data.meta.totalCount;
     }
   } catch (error) {
-    console.error('Error fetching listings:', error);
+    console.error('Error in fetchListings:', error);
     if (listingsContainer) {
       listingsContainer.innerHTML = `
-                <div class="col-span-full text-center py-8 text-red-500">
-                    <p>Error loading listings. Please try again later.</p>
-                </div>
-            `;
+        <div class="col-span-full text-center py-8 text-red-500">
+          <p>Error loading listings: ${error.message}</p>
+        </div>
+      `;
     }
   }
 }
@@ -71,6 +109,9 @@ async function fetchListings() {
 // Display listings
 function displayListings(listings) {
   if (!listingsContainer) return;
+
+  console.log('Displaying listings:', listings.length);
+  console.log('First listing:', listings[0]);
 
   if (listings.length === 0) {
     listingsContainer.innerHTML = `
@@ -259,23 +300,38 @@ async function createListing(formData) {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Content Loaded');
+  console.log('Search button:', searchButton);
+  console.log('Search input:', searchInput);
+
   fetchListings();
 
   // Search
   if (searchButton && searchInput) {
-    searchButton.addEventListener('click', () => {
+    console.log('Setting up search event listeners');
+
+    const performSearch = () => {
+      console.log('Performing search');
       currentSearch = searchInput.value.trim();
+      console.log('Search value:', currentSearch);
       currentPage = 1;
       fetchListings();
+    };
+
+    searchButton.addEventListener('click', () => {
+      console.log('Search button clicked');
+      performSearch();
     });
 
     searchInput.addEventListener('keypress', (e) => {
+      console.log('Key pressed in search input:', e.key);
       if (e.key === 'Enter') {
-        currentSearch = searchInput.value.trim();
-        currentPage = 1;
-        fetchListings();
+        console.log('Enter key pressed, performing search');
+        performSearch();
       }
     });
+  } else {
+    console.warn('Search elements not found:', { searchButton, searchInput });
   }
 
   // Sort
