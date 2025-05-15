@@ -86,10 +86,13 @@ async function fetchListings() {
     }
 
     displayListings(filteredListings);
+
+    // Calculate total pages based on total count from meta
+    const totalPages = Math.ceil(data.meta.totalCount / 12);
     updatePagination({
       ...data.meta,
       totalCount: filteredListings.length,
-      pageCount: Math.ceil(filteredListings.length / 12),
+      pageCount: totalPages,
     });
     if (listingCount) {
       listingCount.textContent = data.meta.totalCount;
