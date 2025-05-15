@@ -87,8 +87,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const userMenuButton = document.getElementById('user-menu-button');
   const userDropdown = document.getElementById('user-dropdown');
   if (userMenuButton && userDropdown) {
-    userMenuButton.addEventListener('click', () => {
+    userMenuButton.addEventListener('click', (e) => {
+      e.stopPropagation();
       userDropdown.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (
+        !userMenuButton.contains(e.target) &&
+        !userDropdown.contains(e.target)
+      ) {
+        userDropdown.classList.add('hidden');
+      }
     });
   }
 });
