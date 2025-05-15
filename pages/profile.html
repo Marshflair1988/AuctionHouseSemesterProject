@@ -19,38 +19,45 @@
             alt="BidHive Logo"
             class="h-12" />
         </a>
-        <div class="hidden md:flex space-x-6">
+        <div
+          class="hidden md:flex space-x-8 absolute left-1/2 transform -translate-x-1/2">
           <a href="../index.html" class="text-gray-700 hover:text-indigo-600"
             >Home</a
           >
           <a href="listings.html" class="text-gray-700 hover:text-indigo-600"
             >Listings</a
           >
-          <a href="#" class="text-gray-700 hover:text-indigo-600">About</a>
+          <a href="about.html" class="text-gray-700 hover:text-indigo-600"
+            >About</a
+          >
         </div>
-        <div id="user-menu" class="relative">
-          <button id="user-menu-button" class="flex items-center space-x-2">
+        <div id="user-menu" class="hidden">
+          <button
+            id="user-menu-button"
+            class="hidden md:flex items-center space-x-2 text-gray-700 hover:text-indigo-600">
             <img
               id="user-avatar"
               src="../assets/default-avatar.png"
               alt="User avatar"
               class="w-8 h-8 rounded-full" />
-            <span id="user-credits" class="text-green-600 font-medium"></span>
+            <span id="user-name" class="hidden md:inline">User</span>
+            <span
+              id="user-credits"
+              class="hidden md:inline text-sm text-green-600 font-bold"></span>
           </button>
           <div
             id="user-dropdown"
-            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
             <a
               href="profile.html"
-              class="block px-4 py-2 text-gray-700 hover:bg-indigo-100"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >Profile</a
             >
-            <a
-              href="#"
+            <button
               id="logout-button"
-              class="block px-4 py-2 text-gray-700 hover:bg-indigo-100"
-              >Logout</a
-            >
+              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              Logout
+            </button>
           </div>
         </div>
         <button class="md:hidden text-gray-700" id="mobile-menu-button">
@@ -63,6 +70,14 @@
         <a href="../index.html" class="block py-2 text-gray-700">Home</a>
         <a href="listings.html" class="block py-2 text-gray-700">Listings</a>
         <a href="about.html" class="block py-2 text-gray-700">About</a>
+        <div id="mobile-auth" class="hidden">
+          <a href="profile.html" class="block py-2 text-gray-700">Profile</a>
+          <button
+            id="mobile-logout"
+            class="block w-full text-left py-2 text-gray-700">
+            Logout
+          </button>
+        </div>
       </div>
     </header>
 
@@ -401,5 +416,6 @@
 
     <script type="module" src="../js/auth.js"></script>
     <script type="module" src="../js/profile.js"></script>
+    <script type="module" src="../js/mobile-menu.js"></script>
   </body>
 </html>
