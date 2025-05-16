@@ -21,6 +21,7 @@ const endedInfo = document.getElementById('ended-info');
 const bidHistory = document.getElementById('bid-history');
 const noBids = document.getElementById('no-bids');
 const bidFeedback = document.getElementById('bid-feedback');
+const deleteListingBtn = document.getElementById('delete-listing-btn');
 
 // State
 let currentListing = null;
@@ -107,6 +108,16 @@ function displayListingDetails() {
 
   // Display bid history
   displayBidHistory();
+
+  // Show delete button if user is the owner
+  if (currentUser && currentListing.seller?.name === currentUser.name) {
+    deleteListingBtn.classList.remove('hidden');
+    deleteListingBtn.addEventListener('click', () =>
+      deleteListing(currentListing.id)
+    );
+  } else {
+    deleteListingBtn.classList.add('hidden');
+  }
 }
 
 // Display media gallery
@@ -200,14 +211,24 @@ function displayAuctionStatus() {
   // Show/hide bid section and bid form
   const bidSection = document.getElementById('bid-section');
   if (bidSection) {
-    if (isAuthenticated && !isEnded) {
+    if (
+      isAuthenticated &&
+      !isEnded &&
+      currentUser &&
+      currentListing.seller?.name !== currentUser.name
+    ) {
       bidSection.classList.remove('hidden');
     } else {
       bidSection.classList.add('hidden');
     }
   }
   if (bidForm) {
-    bidForm.classList.toggle('hidden', !isAuthenticated || isEnded);
+    bidForm.classList.toggle(
+      'hidden',
+      !isAuthenticated ||
+        isEnded ||
+        (currentUser && currentListing.seller?.name === currentUser.name)
+    );
   }
   if (minBidInfo) {
     const minBid = highestBid + 1;
@@ -346,6 +367,36 @@ function showError(message) {
     const errorMessage = document.getElementById('error-message');
     if (errorMessage) {
       errorMessage.textContent = message;
+    }
+  }
+}
+
+// Add delete button functionality
+async function deleteListing(listingId) {
+  if (confirm('Are you sure you want to delete this listing?')) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/auction/listings/${listingId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+          },
+        }
+      );
+
+      if (response.ok) {
+        window.location.href = 'listings.html';
+      } else {
+        const data = await response.json();
+        throw new Error(
+          data.errors?.[0]?.message || 'Failed to delete listing'
+        );
+      }
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      alert('Failed to delete listing: ' + error.message);
     }
   }
 }

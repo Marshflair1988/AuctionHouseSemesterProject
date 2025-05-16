@@ -118,7 +118,7 @@ function displayListings(listings) {
 
   if (listings.length === 0) {
     listingsContainer.innerHTML = `
-      <div class="col-span-full text-center py-8 text-gray-500">
+      <div class="col-span-full text-center py-8 text-gray-500" role="status">
         <p>No listings found.</p>
       </div>
     `;
@@ -156,8 +156,9 @@ function displayListings(listings) {
           timeLeft = `${seconds}s left`;
         }
       }
+      const isOwner = currentUser && listing.seller?.name === currentUser.name;
       return `
-    <div class="bg-white rounded-lg shadow-md overflow-hidden h-[32rem] flex flex-col">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden h-[32rem] flex flex-col" role="listitem">
       <a href="listing-details.html?id=${
         listing.id
       }" class="block flex flex-col h-full">
@@ -167,6 +168,7 @@ function displayListings(listings) {
             alt="${listing.media?.[0]?.alt || listing.title}"
             class="object-cover w-full h-full"
           />
+          ${isOwner ? '' : ''}
         </div>
         <div class="p-4 flex flex-col flex-grow min-h-0">
           <h3 class="text-lg font-semibold mb-2 line-clamp-1">${
@@ -188,7 +190,9 @@ function displayListings(listings) {
                 listing.seller?.name || 'Unknown Seller'
               }</span>
             </div>
-            <div class="text-sm text-red-600 mb-2"><i class="far fa-clock mr-1"></i>${timeLeft}</div>
+            <div class="text-sm text-red-600 mb-2" aria-live="polite">
+              <i class="far fa-clock mr-1" aria-hidden="true"></i>${timeLeft}
+            </div>
             <div class="flex justify-between items-center">
               <div class="text-sm text-gray-500">
                 ${listing._count.bids} bids
@@ -199,7 +203,20 @@ function displayListings(listings) {
             </div>
             ${
               isAuthenticated
-                ? `<button class="mt-4 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 place-bid-btn" data-listing-id="${listing.id}">Place Bid</button>`
+                ? isOwner
+                  ? `<button 
+                      class="mt-4 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 flex items-center justify-center gap-2 delete-listing-btn" 
+                      data-listing-id="${listing.id}"
+                      aria-label="Delete listing">
+                      <i class="fas fa-trash" aria-hidden="true"></i>
+                      Delete Listing
+                    </button>`
+                  : `<button 
+                      class="mt-4 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 place-bid-btn" 
+                      data-listing-id="${listing.id}"
+                      aria-label="Place bid on ${listing.title}">
+                      Place Bid
+                    </button>`
                 : ''
             }
           </div>
@@ -220,6 +237,57 @@ function displayListings(listings) {
         e.preventDefault();
         currentBidListingId = btn.getAttribute('data-listing-id');
         openBidModal();
+      });
+
+      // Add keyboard support
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          btn.click();
+        }
+      });
+    });
+
+    // Add event listeners for delete buttons
+    document.querySelectorAll('.delete-listing-btn').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const listingId = btn.getAttribute('data-listing-id');
+        if (confirm('Are you sure you want to delete this listing?')) {
+          try {
+            const response = await fetch(
+              `${API_BASE_URL}/auction/listings/${listingId}`,
+              {
+                method: 'DELETE',
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                  'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+                },
+              }
+            );
+
+            if (response.ok) {
+              fetchListings(); // Refresh the listings
+            } else {
+              const data = await response.json();
+              throw new Error(
+                data.errors?.[0]?.message || 'Failed to delete listing'
+              );
+            }
+          } catch (error) {
+            console.error('Error deleting listing:', error);
+            alert('Failed to delete listing: ' + error.message);
+          }
+        }
+      });
+
+      // Add keyboard support
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          btn.click();
+        }
       });
     });
   }
@@ -282,6 +350,7 @@ async function createListing(formData) {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
+        'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
       },
       body: JSON.stringify(formData),
     });
@@ -289,7 +358,10 @@ async function createListing(formData) {
     const data = await response.json();
 
     if (response.ok) {
-      closeModal();
+      if (listingModal) {
+        listingModal.classList.add('hidden');
+        listingModal.classList.remove('flex');
+      }
       fetchListings();
       return true;
     } else {
@@ -362,13 +434,13 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'login.html';
         return;
       }
-      listingModal.classList.remove('hidden');
+      openListingModal();
     });
   }
 
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', () => {
-      listingModal.classList.add('hidden');
+      closeListingModal();
     });
   }
 
@@ -400,9 +472,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const success = await createListing(formData);
       if (success) {
         createListingForm.reset();
+        closeListingModal();
       }
     });
   }
+
+  // Add keyboard support for modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const listingModal = document.getElementById('listing-modal');
+      const bidModal = document.getElementById('bid-modal');
+
+      if (!listingModal.classList.contains('hidden')) {
+        closeListingModal();
+      }
+      if (!bidModal.classList.contains('hidden')) {
+        closeBidModal();
+      }
+    }
+  });
 });
 
 // Bid modal logic
@@ -420,19 +508,23 @@ function openBidModal() {
     bidModalError.textContent = '';
   }
 }
+
 function closeBidModal() {
   if (bidModal) {
     bidModal.classList.add('hidden');
   }
 }
+
 if (closeBidModalBtn) {
   closeBidModalBtn.addEventListener('click', closeBidModal);
 }
+
 if (bidModal) {
   bidModal.addEventListener('click', (e) => {
     if (e.target === bidModal) closeBidModal();
   });
 }
+
 if (bidForm) {
   bidForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -495,4 +587,65 @@ if (bidForm) {
       bidModalError.classList.remove('hidden');
     }
   });
+}
+
+// Focus management for modals
+function trapFocus(modal) {
+  const focusableElements = modal.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const firstFocusableElement = focusableElements[0];
+  const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusableElement) {
+          e.preventDefault();
+          lastFocusableElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusableElement) {
+          e.preventDefault();
+          firstFocusableElement.focus();
+        }
+      }
+    }
+  });
+}
+
+// Update modal functions
+function openListingModal() {
+  const modal = document.getElementById('listing-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+
+  // Focus first focusable element
+  const firstInput = modal.querySelector('input, textarea, button');
+  if (firstInput) {
+    firstInput.focus();
+  }
+
+  // Trap focus
+  trapFocus(modal);
+
+  // Update ARIA attributes
+  const userMenuButton = document.getElementById('user-menu-button');
+  if (userMenuButton) {
+    userMenuButton.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function closeListingModal() {
+  const modal = document.getElementById('listing-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.body.style.overflow = '';
+
+  // Return focus to trigger button
+  const createListingBtn = document.getElementById('create-listing-btn');
+  if (createListingBtn) {
+    createListingBtn.focus();
+  }
 }

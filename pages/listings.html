@@ -10,26 +10,45 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   </head>
   <body class="bg-gray-100 min-h-screen flex flex-col">
-    <header class="bg-white shadow-md">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white"
+      >Skip to main content</a
+    >
+    <header class="bg-white shadow-md" role="banner">
       <nav
-        class="container mx-auto px-4 py-3 flex justify-between items-center">
-        <a href="../index.html" class="text-2xl font-bold text-indigo-600">
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+        role="navigation"
+        aria-label="Main navigation">
+        <a
+          href="../index.html"
+          class="text-2xl font-bold text-indigo-600"
+          aria-label="BidHive home">
           <img
             src="../assets/BidHive_Logo.png"
             alt="BidHive Logo"
             class="h-12" />
         </a>
         <div
-          class="hidden md:flex space-x-8 absolute left-1/2 transform -translate-x-1/2">
-          <a href="../index.html" class="text-gray-700 hover:text-indigo-600"
+          class="hidden md:flex space-x-8 absolute left-1/2 transform -translate-x-1/2"
+          role="menubar">
+          <a
+            href="../index.html"
+            class="text-gray-700 hover:text-indigo-600"
+            role="menuitem"
             >Home</a
           >
           <a
             href="listings.html"
             class="text-gray-700 hover:text-indigo-600 border-b-2 border-indigo-600"
+            role="menuitem"
+            aria-current="page"
             >Listings</a
           >
-          <a href="about.html" class="text-gray-700 hover:text-indigo-600"
+          <a
+            href="about.html"
+            class="text-gray-700 hover:text-indigo-600"
+            role="menuitem"
             >About</a
           >
         </div>
@@ -37,67 +56,98 @@
           <a
             href="login.html"
             class="px-4 py-2 text-indigo-600 border border-indigo-600 rounded hover:bg-indigo-50"
+            role="button"
             >Login</a
           >
           <a
             href="register.html"
             class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            role="button"
             >Register</a
           >
         </div>
-        <div id="user-menu" class="hidden">
+        <div id="user-menu" class="relative inline-block" role="menu">
           <button
             id="user-menu-button"
-            class="hidden md:flex items-center space-x-2 text-gray-700 hover:text-indigo-600">
+            class="flex items-center space-x-2 text-gray-700 hover:text-indigo-600"
+            aria-expanded="false"
+            aria-controls="user-dropdown"
+            aria-label="User menu">
             <img
               id="user-avatar"
               src="../assets/default-avatar.png"
               alt="User avatar"
               class="w-8 h-8 rounded-full" />
-            <span id="user-name" class="hidden md:inline">User</span>
+            <span id="user-name" class="inline">User</span>
             <span
               id="user-credits"
-              class="hidden md:inline text-sm text-green-600 font-bold"></span>
+              class="inline text-sm text-green-600 font-bold"
+              aria-label="Available credits"></span>
           </button>
           <div
             id="user-dropdown"
-            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200 transform transition-all duration-200 ease-in-out"
+            role="menu"
+            aria-labelledby="user-menu-button">
             <a
               href="profile.html"
               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              role="menuitem"
               >Profile</a
             >
             <button
               id="logout-button"
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              role="menuitem">
               Logout
             </button>
           </div>
         </div>
-        <button class="md:hidden text-gray-700" id="mobile-menu-button">
-          <i class="fas fa-bars"></i>
+        <button
+          class="md:hidden text-gray-700"
+          id="mobile-menu-button"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Toggle mobile menu">
+          <i class="fas fa-bars" aria-hidden="true"></i>
         </button>
       </nav>
       <div
         id="mobile-menu"
-        class="hidden md:hidden bg-white px-4 pt-2 pb-4 border-t">
-        <a href="../index.html" class="block py-2 text-gray-700">Home</a>
-        <a href="listings.html" class="block py-2 font-medium text-indigo-600"
+        class="hidden md:hidden bg-white px-4 pt-2 pb-4 border-t"
+        role="menu"
+        aria-labelledby="mobile-menu-button">
+        <a href="../index.html" class="block py-2 text-gray-700" role="menuitem"
+          >Home</a
+        >
+        <a
+          href="listings.html"
+          class="block py-2 font-medium text-indigo-600"
+          role="menuitem"
+          aria-current="page"
           >Listings</a
         >
-        <a href="about.html" class="block py-2 text-gray-700">About</a>
+        <a href="about.html" class="block py-2 text-gray-700" role="menuitem"
+          >About</a
+        >
         <div id="mobile-auth" class="hidden">
-          <a href="profile.html" class="block py-2 text-gray-700">Profile</a>
+          <a
+            href="profile.html"
+            class="block py-2 text-gray-700"
+            role="menuitem"
+            >Profile</a
+          >
           <button
             id="mobile-logout"
-            class="block w-full text-left py-2 text-gray-700">
+            class="block w-full text-left py-2 text-gray-700"
+            role="menuitem">
             Logout
           </button>
         </div>
       </div>
     </header>
 
-    <main class="flex-grow py-8">
+    <main id="main-content" class="flex-grow py-8" role="main">
       <div class="container mx-auto px-4">
         <div
           class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -106,26 +156,32 @@
             class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <button
               id="create-listing-btn"
-              class="hidden px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 flex items-center justify-center">
-              <i class="fas fa-plus mr-2"></i> Create Listing
+              class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 flex items-center justify-center"
+              aria-label="Create new listing">
+              <i class="fas fa-plus mr-2" aria-hidden="true"></i> Create Listing
             </button>
             <div class="relative">
+              <label for="search-input" class="sr-only"
+                >Search listings and users</label
+              >
               <input
                 type="text"
                 id="search-input"
                 placeholder="Search listings and users..."
-                class="w-full sm:w-64 px-4 py-2 pr-10 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                class="w-full sm:w-64 px-4 py-2 pr-10 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                aria-label="Search listings and users" />
               <button
                 type="button"
                 id="search-button"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-indigo-600 cursor-pointer">
-                <i class="fas fa-search"></i>
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-indigo-600 cursor-pointer"
+                aria-label="Search">
+                <i class="fas fa-search" aria-hidden="true"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6" role="search">
           <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
             <div class="mb-4 md:mb-0">
               <label
@@ -135,7 +191,8 @@
               >
               <select
                 id="sort-by"
-                class="border rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                class="border rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                aria-label="Sort listings by">
                 <option value="created">Newest</option>
                 <option value="endsAt">Ending Soon</option>
                 <option value="bids">Most Bids</option>
@@ -149,14 +206,15 @@
               >
               <select
                 id="active-only"
-                class="border rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                class="border rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                aria-label="Filter listings by status">
                 <option value="all">All Listings</option>
                 <option value="active" selected>Active Only</option>
                 <option value="ended">Ended</option>
               </select>
             </div>
             <div class="flex-grow"></div>
-            <div class="text-gray-500 text-sm self-end">
+            <div class="text-gray-500 text-sm self-end" aria-live="polite">
               <span id="listing-count">0</span> listings found
             </div>
           </div>
@@ -164,22 +222,31 @@
 
         <div
           id="listings-container"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          role="list"
+          aria-label="Auction listings">
           <!-- Listings will be populated here dynamically -->
-          <div class="col-span-full text-center py-8 text-gray-500">
+          <div
+            class="col-span-full text-center py-8 text-gray-500"
+            role="status">
             <div
-              class="animate-spin inline-block w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
+              class="animate-spin inline-block w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"
+              aria-hidden="true"></div>
             <p>Loading listings...</p>
           </div>
         </div>
 
-        <div id="pagination" class="flex justify-center space-x-2 mb-8">
+        <div
+          id="pagination"
+          class="flex justify-center space-x-2 mb-8"
+          role="navigation"
+          aria-label="Pagination">
           <!-- Pagination will be populated here -->
         </div>
       </div>
     </main>
 
-    <footer class="bg-gray-800 text-white py-8">
+    <footer class="bg-gray-800 text-white py-8" role="contentinfo">
       <div class="container mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between">
           <div class="mb-6 md:mb-0">
@@ -187,8 +254,10 @@
             <p class="text-gray-400">Your trusted online auction platform</p>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-            <div>
-              <h4 class="text-lg font-semibold mb-3">Quick Links</h4>
+            <nav aria-labelledby="quick-links">
+              <h4 id="quick-links" class="text-lg font-semibold mb-3">
+                Quick Links
+              </h4>
               <ul class="space-y-2">
                 <li>
                   <a href="../index.html" class="text-gray-400 hover:text-white"
@@ -206,9 +275,11 @@
                   >
                 </li>
               </ul>
-            </div>
-            <div>
-              <h4 class="text-lg font-semibold mb-3">Account</h4>
+            </nav>
+            <nav aria-labelledby="account-links">
+              <h4 id="account-links" class="text-lg font-semibold mb-3">
+                Account
+              </h4>
               <ul class="space-y-2">
                 <li>
                   <a href="login.html" class="text-gray-400 hover:text-white"
@@ -226,9 +297,9 @@
                   >
                 </li>
               </ul>
-            </div>
-            <div>
-              <h4 class="text-lg font-semibold mb-3">Legal</h4>
+            </nav>
+            <nav aria-labelledby="legal-links">
+              <h4 id="legal-links" class="text-lg font-semibold mb-3">Legal</h4>
               <ul class="space-y-2">
                 <li>
                   <a href="#" class="text-gray-400 hover:text-white"
@@ -241,7 +312,7 @@
                   >
                 </li>
               </ul>
-            </div>
+            </nav>
           </div>
         </div>
         <div class="mt-8 pt-8 border-t border-gray-700 text-center">
@@ -254,23 +325,33 @@
 
     <div
       id="listing-modal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden"
+      role="dialog"
+      aria-labelledby="modal-title"
+      aria-modal="true">
       <div
         class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold">Create New Listing</h2>
-            <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-              <i class="fas fa-times"></i>
+            <h2 id="modal-title" class="text-2xl font-bold">
+              Create New Listing
+            </h2>
+            <button
+              id="close-modal"
+              class="text-gray-500 hover:text-gray-700"
+              aria-label="Close modal">
+              <i class="fas fa-times" aria-hidden="true"></i>
             </button>
           </div>
           <form id="create-listing-form" class="space-y-4">
             <div
               id="modal-error"
-              class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative hidden"></div>
+              class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative hidden"
+              role="alert"></div>
             <div
               id="modal-success"
-              class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative hidden"></div>
+              class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative hidden"
+              role="status"></div>
             <div>
               <label for="title" class="block text-gray-700 mb-1">Title</label>
               <input
@@ -278,7 +359,8 @@
                 id="title"
                 name="title"
                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required />
+                required
+                aria-required="true" />
             </div>
 
             <div>
@@ -290,7 +372,8 @@
                 name="description"
                 rows="4"
                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required></textarea>
+                required
+                aria-required="true"></textarea>
             </div>
 
             <div>
@@ -302,7 +385,11 @@
                 id="tags"
                 name="tags"
                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="electronics, vintage, rare" />
+                placeholder="electronics, vintage, rare"
+                aria-describedby="tags-help" />
+              <p id="tags-help" class="sr-only">
+                Enter tags separated by commas
+              </p>
             </div>
 
             <div>
@@ -314,7 +401,11 @@
                 name="media"
                 rows="3"
                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
+                placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
+                aria-describedby="media-help"></textarea>
+              <p id="media-help" class="sr-only">
+                Enter one media URL per line
+              </p>
             </div>
 
             <div>
@@ -326,7 +417,8 @@
                 id="ends-at"
                 name="ends-at"
                 class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required />
+                required
+                aria-required="true" />
             </div>
 
             <button
@@ -341,23 +433,34 @@
 
     <div
       id="bid-modal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+      role="dialog"
+      aria-labelledby="bid-modal-title"
+      aria-modal="true">
       <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
         <button
           id="close-bid-modal"
-          class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl">
+          class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl"
+          aria-label="Close bid modal">
           &times;
         </button>
-        <h3 class="text-lg font-semibold mb-4">Place a Bid</h3>
+        <h3 id="bid-modal-title" class="text-lg font-semibold mb-4">
+          Place a Bid
+        </h3>
         <form id="bid-form" class="space-y-4">
+          <label for="bid-amount" class="sr-only">Bid amount</label>
           <input
             type="number"
             id="bid-amount"
             class="w-full border border-gray-300 rounded-md p-2"
             min="1"
             placeholder="Enter your bid amount"
-            required />
-          <div id="bid-modal-error" class="hidden text-red-600"></div>
+            required
+            aria-required="true" />
+          <div
+            id="bid-modal-error"
+            class="hidden text-red-600"
+            role="alert"></div>
           <button
             type="submit"
             class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">

@@ -89,7 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (userMenuButton && userDropdown) {
     userMenuButton.addEventListener('click', (e) => {
       e.stopPropagation();
+      const isExpanded =
+        userMenuButton.getAttribute('aria-expanded') === 'true';
+      userMenuButton.setAttribute('aria-expanded', !isExpanded);
       userDropdown.classList.toggle('hidden');
+    });
+
+    // Add keyboard support
+    userMenuButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        userMenuButton.click();
+      }
     });
 
     // Close dropdown when clicking outside
@@ -98,7 +109,17 @@ document.addEventListener('DOMContentLoaded', () => {
         !userMenuButton.contains(e.target) &&
         !userDropdown.contains(e.target)
       ) {
+        userMenuButton.setAttribute('aria-expanded', 'false');
         userDropdown.classList.add('hidden');
+      }
+    });
+
+    // Trap focus in dropdown when open
+    userDropdown.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        userMenuButton.setAttribute('aria-expanded', 'false');
+        userDropdown.classList.add('hidden');
+        userMenuButton.focus();
       }
     });
   }
