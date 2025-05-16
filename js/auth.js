@@ -23,9 +23,11 @@ function checkAuth() {
 function updateUIForAuth() {
   const authButtons = document.getElementById('auth-buttons');
   const userMenu = document.getElementById('user-menu');
+  const mobileAuth = document.getElementById('mobile-auth');
   const userAvatar = document.getElementById('user-avatar');
   const userCredits = document.getElementById('user-credits');
   const userName = document.getElementById('user-name');
+  const mobileCredits = document.getElementById('mobile-credits');
 
   // Hide auth buttons
   if (authButtons) {
@@ -45,11 +47,19 @@ function updateUIForAuth() {
       userName.textContent = currentUser?.name || 'User';
     }
   }
+
+  if (mobileAuth) mobileAuth.classList.remove('hidden');
+  if (mobileCredits) {
+    mobileCredits.textContent = `${currentUser?.credits || 0} credits`;
+    mobileCredits.classList.remove('hidden');
+  }
 }
 
 function updateUIForGuest() {
   const authButtons = document.getElementById('auth-buttons');
   const userMenu = document.getElementById('user-menu');
+  const mobileAuth = document.getElementById('mobile-auth');
+  const mobileCredits = document.getElementById('mobile-credits');
 
   // Show auth buttons
   if (authButtons) {
@@ -60,6 +70,9 @@ function updateUIForGuest() {
   if (userMenu) {
     userMenu.classList.add('hidden');
   }
+
+  if (mobileAuth) mobileAuth.classList.add('hidden');
+  if (mobileCredits) mobileCredits.classList.add('hidden');
 }
 
 // Handle logout
@@ -133,8 +146,26 @@ function getToken() {
   return localStorage.getItem('token');
 }
 
+// Add a function to update credits across all pages
+function updateCreditsDisplay(credits) {
+  const userCredits = document.getElementById('user-credits');
+  const mobileCredits = document.getElementById('mobile-credits');
+
+  if (userCredits) {
+    userCredits.textContent = `${credits} credits`;
+  }
+  if (mobileCredits) {
+    mobileCredits.textContent = `${credits} credits`;
+  }
+}
+
+// Update the updateUser function to also update the UI
 function updateUser(user) {
   localStorage.setItem('user', JSON.stringify(user));
+  currentUser = user;
+  if (user.credits !== undefined) {
+    updateCreditsDisplay(user.credits);
+  }
 }
 
 async function authFetch(endpoint, options = {}) {
@@ -240,4 +271,5 @@ export {
   updateUser,
   authFetch,
   updateUIForAuth,
+  updateCreditsDisplay,
 };

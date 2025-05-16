@@ -59,14 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close mobile menu when clicking outside
     document.addEventListener('click', (e) => {
-      if (
-        !mobileMenuButton.contains(e.target) &&
-        !mobileMenu.contains(e.target)
-      ) {
-        console.log('Click outside detected, closing menu');
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-        mobileMenu.classList.add('hidden');
-        mobileMenuButton.focus();
+      // Only handle clicks if the mobile menu is open
+      if (!mobileMenu.classList.contains('hidden')) {
+        // Check if the click is outside both the menu button and menu
+        if (
+          !mobileMenuButton.contains(e.target) &&
+          !mobileMenu.contains(e.target)
+        ) {
+          console.log('Click outside detected, closing menu');
+          mobileMenuButton.setAttribute('aria-expanded', 'false');
+          mobileMenu.classList.add('hidden');
+          mobileMenuButton.focus();
+        }
       }
     });
 

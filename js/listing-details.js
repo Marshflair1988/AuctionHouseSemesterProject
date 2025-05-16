@@ -320,9 +320,10 @@ async function placeBid(amount) {
     const data = await response.json();
 
     if (response.ok) {
-      currentListing = data.data;
-      displayListingDetails();
-      // --- Begin credits update ---
+      // Fetch fresh listing data to update the UI
+      await fetchListingDetails();
+
+      // Update user credits
       const { getUser, updateUser, authFetch, updateUIForAuth } = await import(
         './auth.js'
       );
@@ -338,8 +339,8 @@ async function placeBid(amount) {
           // Optionally log error
         }
       }
-      // --- End credits update ---
-      // --- Begin profile refresh if on profile page ---
+
+      // Refresh profile if on profile page
       if (window.location.pathname.endsWith('profile.html')) {
         try {
           const { initializeProfile } = await import('./profile.js');
@@ -348,7 +349,6 @@ async function placeBid(amount) {
           // Optionally log error
         }
       }
-      // --- End profile refresh ---
       return true;
     } else {
       throw new Error(data.errors?.[0]?.message || 'Failed to place bid');
@@ -429,40 +429,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Bid form
   if (bidForm) {
-    bidForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      if (!isAuthenticated) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      const amount = parseInt(bidAmount.value);
-      if (isNaN(amount) || amount <= 0) {
-        if (bidFeedback) {
-          bidFeedback.textContent = 'Please enter a valid bid amount.';
-          bidFeedback.className = 'mt-2 text-center text-sm text-red-600';
+    const submitBidBtn = document.getElementById('submit-bid');
+    if (submitBidBtn) {
+      submitBidBtn.addEventListener('click', async () => {
+        if (!isAuthenticated) {
+          window.location.href = 'login.html';
+          return;
         }
-        return;
-      }
 
-      const success = await placeBid(amount);
-      if (success) {
-        bidAmount.value = '';
-        if (bidFeedback) {
-          bidFeedback.textContent = 'Bid placed successfully!';
-          bidFeedback.className = 'mt-2 text-center text-sm text-green-600';
-          setTimeout(() => {
-            bidFeedback.textContent = '';
-          }, 2000);
+        const amount = parseInt(bidAmount.value);
+        if (isNaN(amount) || amount <= 0) {
+          if (bidFeedback) {
+            bidFeedback.textContent = 'Please enter a valid bid amount.';
+            bidFeedback.className = 'mt-2 text-center text-sm text-red-600';
+          }
+          return;
         }
-      } else {
-        if (bidFeedback) {
-          bidFeedback.textContent = 'Failed to place bid. Please try again.';
-          bidFeedback.className = 'mt-2 text-center text-sm text-red-600';
+
+        const success = await placeBid(amount);
+        if (success) {
+          bidAmount.value = '';
+          if (bidFeedback) {
+            bidFeedback.textContent = 'Bid placed successfully!';
+            bidFeedback.className = 'mt-2 text-center text-sm text-green-600';
+            setTimeout(() => {
+              bidFeedback.textContent = '';
+            }, 2000);
+          }
+        } else {
+          if (bidFeedback) {
+            bidFeedback.textContent = 'Failed to place bid. Please try again.';
+            bidFeedback.className = 'mt-2 text-center text-sm text-red-600';
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   // Update time left every minute
