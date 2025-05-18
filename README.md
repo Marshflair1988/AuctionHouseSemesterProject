@@ -102,11 +102,11 @@ auction-house/
 
 ## Security
 
-- All sensitive information (API keys, credentials) is stored in environment variables
-- JWT-based authentication
-- Input validation and sanitization
-- XSS protection
-- CSRF protection
+- JWT-based authentication for secure user sessions
+- API key authentication for Noroff API access
+- Basic input validation and sanitization
+- Secure storage of authentication tokens
+- Environment variable protection for sensitive data
 
 ## Contributing
 
@@ -115,12 +115,3 @@ auction-house/
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Tailwind CSS for the utility-first CSS framework
-- All contributors who have helped shape this project
