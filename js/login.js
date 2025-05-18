@@ -41,12 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
           // Fetch user profile to get complete user data including credits
           const profileResponse = await fetch(
-            `${API_BASE_URL}/auction/profiles/${data.data.name}`,
+            `${API_BASE_URL}/auction/profiles/${
+              data.data.name
+            }?_t=${Date.now()}`,
             {
               headers: {
                 Authorization: `Bearer ${data.data.accessToken}`,
                 'X-Noroff-API-Key': '7ae55a4b-8609-40fa-a8f6-a4967319e591',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                Pragma: 'no-cache',
+                Expires: '0',
               },
+              cache: 'no-store',
             }
           );
 

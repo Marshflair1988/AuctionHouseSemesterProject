@@ -174,13 +174,29 @@ async function authFetch(endpoint, options = {}) {
   const url = endpoint.startsWith('http')
     ? endpoint
     : `${base}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+
+  // Add cache-busting timestamp for GET requests
+  const finalUrl =
+    options.method === 'GET'
+      ? `${url}${url.includes('?') ? '&' : '?'}_t=${Date.now()}`
+      : url;
+
   const headers = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,
     'X-Noroff-API-Key': '7ae55a4b-8609-40fa-a8f6-a4967319e591',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    Pragma: 'no-cache',
+    Expires: '0',
     ...(options.headers || {}),
   };
-  const response = await fetch(url, { ...options, headers });
+
+  const response = await fetch(finalUrl, {
+    ...options,
+    headers,
+    cache: 'no-store',
+  });
+
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
     throw new Error(data.errors?.[0]?.message || response.statusText);
