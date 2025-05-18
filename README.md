@@ -74,19 +74,41 @@ A modern, responsive web application for managing and participating in online au
    npm install
    ```
 
-3. Create a `.env` file in the root directory and add your environment variables:
+3. Set up API credentials:
+
+   - Copy `js/config.template.js` to `js/config.js`
+   - Replace `YOUR_API_KEY_HERE` with your Noroff API key
+   - Never commit `config.js` to version control
+
+4. Create a `.env` file in the root directory and add your environment variables:
 
    ```
    JWT_SECRET=your_jwt_secret
    ```
 
-4. Start the development server:
+5. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-5. Open your browser and navigate to `http://localhost:3000`
+6. Open your browser and navigate to `http://localhost:3000`
+
+### API Credentials
+
+To get your Noroff API credentials:
+
+1. Log in to your Noroff student account
+2. Navigate to the API section
+3. Generate a new API key
+4. Copy the key and replace it in your `config.js` file
+
+**Important Security Notes:**
+
+- Never commit your `config.js` file to version control
+- Keep your API key secure and don't share it publicly
+- If you accidentally commit your API key, rotate it immediately
+- Use environment variables for production deployments
 
 ## Project Structure
 
