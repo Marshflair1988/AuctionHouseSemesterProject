@@ -10,8 +10,6 @@ credentials.json
 
 # Dependencies
 /node_modules
-/.pnp
-.pnp.js
 
 # Build outputs
 /dist
@@ -25,8 +23,6 @@ yarn-error.log*
 # IDE and editor files
 .idea/
 .vscode/
-*.swp
-*.swo
 .DS_Store
 
 # Testing
@@ -34,4 +30,8 @@ yarn-error.log*
 
 # Temporary files
 *.log
-*.tmp 
+*.tmp
+*.cache
+
+# Optional: Uncomment if you want to ignore package-lock.json
+# package-lock.json 

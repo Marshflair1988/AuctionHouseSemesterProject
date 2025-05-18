@@ -27,27 +27,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const isExpanded =
         mobileMenuButton.getAttribute('aria-expanded') === 'true';
       console.log('Current expanded state:', isExpanded);
-      mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-      mobileMenu.classList.toggle('hidden');
-      console.log(
-        'Mobile menu hidden state:',
-        mobileMenu.classList.contains('hidden')
-      );
 
-      // Focus management
-      if (!isExpanded) {
-        // Menu is opening, focus first focusable element
+      // Update button state
+      mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+
+      // Toggle menu with transition
+      if (isExpanded) {
+        mobileMenu.classList.add('hidden');
+        mobileMenuButton.focus();
+      } else {
+        mobileMenu.classList.remove('hidden');
+        // Focus first focusable element
         const firstFocusable = mobileMenu.querySelector('a, button');
         if (firstFocusable) {
           firstFocusable.focus();
         }
-      } else {
-        // Menu is closing, return focus to button
-        mobileMenuButton.focus();
+      }
+
+      // Update icon
+      const icon = mobileMenuButton.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
       }
     };
 
-    mobileMenuButton.addEventListener('click', toggleMobileMenu);
+    mobileMenuButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMobileMenu();
+    });
 
     // Add keyboard support
     mobileMenuButton.addEventListener('keydown', (e) => {
@@ -59,17 +67,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close mobile menu when clicking outside
     document.addEventListener('click', (e) => {
-      // Only handle clicks if the mobile menu is open
-      if (!mobileMenu.classList.contains('hidden')) {
-        // Check if the click is outside both the menu button and menu
-        if (
-          !mobileMenuButton.contains(e.target) &&
-          !mobileMenu.contains(e.target)
-        ) {
-          console.log('Click outside detected, closing menu');
-          mobileMenuButton.setAttribute('aria-expanded', 'false');
-          mobileMenu.classList.add('hidden');
-          mobileMenuButton.focus();
+      if (
+        !mobileMenu.classList.contains('hidden') &&
+        !mobileMenuButton.contains(e.target) &&
+        !mobileMenu.contains(e.target)
+      ) {
+        console.log('Click outside detected, closing menu');
+        mobileMenuButton.setAttribute('aria-expanded', 'false');
+        mobileMenu.classList.add('hidden');
+        mobileMenuButton.focus();
+
+        // Reset icon
+        const icon = mobileMenuButton.querySelector('i');
+        if (icon) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
         }
       }
     });
@@ -80,6 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileMenuButton.setAttribute('aria-expanded', 'false');
         mobileMenu.classList.add('hidden');
         mobileMenuButton.focus();
+
+        // Reset icon
+        const icon = mobileMenuButton.querySelector('i');
+        if (icon) {
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        }
       }
     });
   }

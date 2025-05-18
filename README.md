@@ -50,7 +50,7 @@ A modern, responsive web application for managing and participating in online au
 - **Backend**
   - Node.js
   - Express.js
-  - MongoDB (for data storage)
+  - RESTful API integration
 
 ## Getting Started
 
@@ -58,7 +58,6 @@ A modern, responsive web application for managing and participating in online au
 
 - Node.js (v14 or higher)
 - npm or yarn
-- MongoDB
 
 ### Installation
 
@@ -78,7 +77,6 @@ A modern, responsive web application for managing and participating in online au
 3. Create a `.env` file in the root directory and add your environment variables:
 
    ```
-   MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
    ```
 
@@ -125,5 +123,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - Tailwind CSS for the utility-first CSS framework
-- MongoDB for the database solution
 - All contributors who have helped shape this project

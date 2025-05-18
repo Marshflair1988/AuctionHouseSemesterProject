@@ -1,5 +1,7 @@
+import config from './config.js';
+
 // Base API URL
-const API_BASE_URL = 'https://v2.api.noroff.dev';
+const API_BASE_URL = config.API_BASE_URL;
 
 // Authentication state
 let isAuthenticated = false;
@@ -170,7 +172,7 @@ function updateUser(user) {
 
 async function authFetch(endpoint, options = {}) {
   const token = getToken();
-  const apiKey = 'aa2b815e-2edb-4047-8ddd-2503d905bff6';
+  const apiKey = config.API_KEY;
   const base = API_BASE_URL;
   const url = endpoint.startsWith('http')
     ? endpoint
@@ -198,7 +200,7 @@ async function renderFeaturedListings() {
       `${API_BASE_URL}/auction/listings?_seller=true&_active=true&limit=3`,
       {
         headers: {
-          'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+          'X-Noroff-API-Key': config.API_KEY,
         },
       }
     );
