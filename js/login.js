@@ -1,4 +1,5 @@
 import { API_BASE_URL, updateUser, updateUIForAuth } from './auth.js';
+import config from './config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+            'X-Noroff-API-Key': config.API_KEY,
           },
           body: JSON.stringify({ email, password }),
         });
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             {
               headers: {
                 Authorization: `Bearer ${data.data.accessToken}`,
-                'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+                'X-Noroff-API-Key': config.API_KEY,
               },
             }
           );

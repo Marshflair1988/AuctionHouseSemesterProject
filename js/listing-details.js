@@ -1,4 +1,5 @@
 import { API_BASE_URL, isAuthenticated, currentUser } from './auth.js';
+import config from './config.js';
 
 // DOM Elements
 const listingLoading = document.getElementById('listing-loading');
@@ -310,7 +311,7 @@ async function placeBid(amount) {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+          'X-Noroff-API-Key': config.API_KEY,
         },
         body: JSON.stringify({ amount }),
       }
@@ -380,7 +381,7 @@ async function deleteListing(listingId) {
           method: 'DELETE',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
-            'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+            'X-Noroff-API-Key': config.API_KEY,
           },
         }
       );

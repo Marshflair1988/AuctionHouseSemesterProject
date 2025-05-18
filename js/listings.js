@@ -1,4 +1,5 @@
 import { API_BASE_URL, isAuthenticated, currentUser } from './auth.js';
+import config from './config.js';
 
 // State
 let currentPage = 1;
@@ -46,7 +47,7 @@ async function fetchListings() {
 
     const response = await fetch(url, {
       headers: {
-        'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+        'X-Noroff-API-Key': config.API_KEY,
         'Content-Type': 'application/json',
       },
     });
@@ -247,7 +248,7 @@ function displayListings(listings) {
                 method: 'DELETE',
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem('token')}`,
-                  'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+                  'X-Noroff-API-Key': config.API_KEY,
                 },
               }
             );
@@ -334,7 +335,7 @@ async function createListing(formData) {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
-        'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+        'X-Noroff-API-Key': config.API_KEY,
       },
       body: JSON.stringify(formData),
     });
@@ -514,7 +515,7 @@ if (bidForm) {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
-            'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
+            'X-Noroff-API-Key': config.API_KEY,
           },
           body: JSON.stringify({ amount }),
         }
