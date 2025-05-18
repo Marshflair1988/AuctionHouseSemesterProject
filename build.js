@@ -11,7 +11,7 @@ const config = {
   API_BASE_URL: 'https://v2.api.noroff.dev',
   API_KEY: '${API_KEY}',
   APP_NAME: 'Auction House',
-  APP_ENV: process.env.NOROFF_API_KEY ? 'production' : 'development',
+  APP_ENV: 'production',
 };
 
 // Prevent modifications to the config object
