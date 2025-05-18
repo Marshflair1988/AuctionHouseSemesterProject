@@ -53,8 +53,7 @@ async function fetchListingDetails() {
       );
     }
   } catch (error) {
-    console.error('Error fetching listing details:', error);
-    showError(error.message);
+    showListingError(error.message || 'Failed to load listing details');
   }
 }
 
@@ -354,7 +353,7 @@ async function placeBid(amount) {
       throw new Error(data.errors?.[0]?.message || 'Failed to place bid');
     }
   } catch (error) {
-    console.error('Error placing bid:', error);
+    showBidError(error.message || 'Failed to place bid');
     return false;
   }
 }
@@ -395,8 +394,7 @@ async function deleteListing(listingId) {
         );
       }
     } catch (error) {
-      console.error('Error deleting listing:', error);
-      alert('Failed to delete listing: ' + error.message);
+      showListingError(error.message || 'Failed to delete listing');
     }
   }
 }

@@ -67,12 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error(data.errors?.[0]?.message || 'Login failed');
         }
       } catch (error) {
-        console.error('Login error:', error);
-        if (errorMessage) {
-          errorMessage.textContent = error.message;
-          errorMessage.classList.remove('hidden');
-          if (successMessage) successMessage.classList.add('hidden');
-        }
+        showLoginError(error.message || 'Login failed. Please try again.');
       }
     });
   }

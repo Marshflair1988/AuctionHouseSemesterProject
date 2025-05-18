@@ -6,9 +6,7 @@ import {
   updateUIForAuth,
 } from './auth.js';
 
-/**
- * Profile management functionality for BidHive Auction House
- */
+// Profile management functionality for BidHive Auction House
 
 document.addEventListener('DOMContentLoaded', () => {
   // Check if user is logged in
@@ -34,9 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEditBioModal();
 });
 
-/**
- * Initialize the profile page with user data
- */
 async function initializeProfile() {
   try {
     // Get user profile data (with listings and bids)
@@ -51,8 +46,6 @@ async function initializeProfile() {
       `/auction/profiles/${user.name}?_listings=true&_bids=true`
     );
     const userData = userResponse.data;
-
-    console.log('API bids array:', userData.bids);
 
     // Fetch each listing with its bids
     if (userData.listings && userData.listings.length > 0) {
@@ -111,7 +104,7 @@ async function initializeProfile() {
         page++;
       }
     } catch (e) {
-      console.error('Error fetching all listings for my bids:', e);
+      // Handle error silently
     }
     displayUserBids(allBids);
     // --- End workaround for My Bids ---
@@ -119,17 +112,11 @@ async function initializeProfile() {
     document.getElementById('profile-loading').classList.add('hidden');
     document.getElementById('profile-content').classList.remove('hidden');
   } catch (error) {
-    console.error('Error initializing profile:', error);
     showProfileError(error.message || 'Failed to load profile data');
   }
 }
 
-/**
- * Display user profile information
- * @param {Object} userData - The user profile data
- */
-function displayUserProfile(userData) {
-  console.log('Displaying user profile:', userData);
+async function displayUserProfile(userData) {
   document.getElementById('profile-name').textContent = userData.name;
   document.getElementById('profile-email').textContent = userData.email;
   document.getElementById('profile-credits').textContent = `${
@@ -164,7 +151,6 @@ function displayUserProfile(userData) {
 
   // Banner
   const bannerImage = document.getElementById('banner-image');
-  console.log('Banner object for rendering:', userData.banner);
   if (userData.banner && userData.banner.url) {
     bannerImage.src = userData.banner.url;
     bannerImage.alt = userData.banner.alt || `${userData.name}'s banner`;
@@ -181,11 +167,7 @@ function displayUserProfile(userData) {
   document.getElementById('banner').value = userData.banner?.url || '';
 }
 
-/**
- * Display user's listings
- * @param {Array} listings
- */
-function displayUserListings(listings) {
+async function displayUserListings(listings) {
   const container = document.getElementById('my-listings-container');
   if (!container) return;
   container.innerHTML = '';
@@ -198,11 +180,7 @@ function displayUserListings(listings) {
   });
 }
 
-/**
- * Display user's bids
- * @param {Array} bids
- */
-function displayUserBids(bids) {
+async function displayUserBids(bids) {
   const container = document.getElementById('my-bids-container');
   if (!container) return;
   container.innerHTML = '';
@@ -215,9 +193,6 @@ function displayUserBids(bids) {
   });
 }
 
-/**
- * Set up profile update form
- */
 function setupProfileForm() {
   const profileForm = document.getElementById('profile-form');
   const errorMessage = document.getElementById('profile-error');
@@ -271,9 +246,6 @@ function setupProfileForm() {
   }
 }
 
-/**
- * Set up create listing modal
- */
 function setupCreateListingModal() {
   const createListingBtn = document.getElementById('create-listing-btn');
   const listingModal = document.getElementById('listing-modal');
@@ -408,20 +380,12 @@ function createUserListingItem(listing) {
   const isActive = now < endsAt;
   const timeLeft = getTimeLeft(now, endsAt);
 
-  // Debug logs
-  console.log('Listing:', listing);
-  console.log('Listing ID:', listing.id);
-  console.log('Listing bids:', listing.bids);
-  console.log('Listing _count:', listing._count);
-
   // Format bid information
   const bidCount = listing.bids ? listing.bids.length : 0;
-  console.log('Calculated bidCount:', bidCount);
   const highestBid =
     bidCount > 0
       ? Math.max(...(listing.bids || []).map((bid) => bid.amount))
       : 0;
-  console.log('Calculated highestBid:', highestBid);
 
   item.innerHTML = `
         <div class="flex flex-col sm:flex-row">
@@ -582,10 +546,6 @@ function getTimeLeft(now, end) {
   }
 }
 
-/**
- * Display a profile error message
- * @param {string} message - The error message
- */
 function showProfileError(message) {
   const errorMessage = document.getElementById('profile-error');
   const successMessage = document.getElementById('profile-success');
@@ -600,10 +560,6 @@ function showProfileError(message) {
   }
 }
 
-/**
- * Display a profile success message
- * @param {string} message - The success message
- */
 function showProfileSuccess(message) {
   const errorMessage = document.getElementById('profile-error');
   const successMessage = document.getElementById('profile-success');
@@ -618,10 +574,6 @@ function showProfileSuccess(message) {
   }
 }
 
-/**
- * Display a modal error message
- * @param {string} message - The error message
- */
 function showModalError(message) {
   const errorMessage = document.getElementById('modal-error');
   const successMessage = document.getElementById('modal-success');
@@ -636,10 +588,6 @@ function showModalError(message) {
   }
 }
 
-/**
- * Display a modal success message
- * @param {string} message - The success message
- */
 function showModalSuccess(message) {
   const errorMessage = document.getElementById('modal-error');
   const successMessage = document.getElementById('modal-success');
@@ -654,11 +602,6 @@ function showModalSuccess(message) {
   }
 }
 
-/**
- * Validate a URL
- * @param {string} url - The URL to validate
- * @returns {boolean} True if the URL is valid
- */
 function isValidUrl(url) {
   try {
     new URL(url);
@@ -668,11 +611,6 @@ function isValidUrl(url) {
   }
 }
 
-/**
- * Toggle the form's interactive state
- * @param {HTMLFormElement} form - The form element
- * @param {boolean} disabled - Whether to disable the form
- */
 function toggleFormState(form, disabled) {
   // Disable/enable all form elements
   Array.from(form.elements).forEach((element) => {
@@ -717,7 +655,6 @@ async function updateProfileMedia({ bannerUrl, avatarUrl, bio }) {
       method: 'PUT',
       body: JSON.stringify(body),
     });
-    console.log('Profile update response:', response);
     if (response.errors) {
       throw new Error(
         response.errors[0]?.message || 'Failed to update profile'
@@ -730,9 +667,6 @@ async function updateProfileMedia({ bannerUrl, avatarUrl, bio }) {
   }
 }
 
-/**
- * Set up edit bio modal
- */
 function setupEditBioModal() {
   const editBioBtn = document.getElementById('edit-bio-btn');
   const editBioModal = document.getElementById('edit-bio-modal');

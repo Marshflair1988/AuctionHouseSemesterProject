@@ -44,9 +44,6 @@ async function fetchListings() {
       url += `&search=${encodeURIComponent(currentSearch.trim())}`;
     }
 
-    console.log('Current search value:', currentSearch);
-    console.log('Fetching listings with URL:', url);
-
     const response = await fetch(url, {
       headers: {
         'X-Noroff-API-Key': 'aa2b815e-2edb-4047-8ddd-2503d905bff6',
@@ -54,21 +51,14 @@ async function fetchListings() {
       },
     });
 
-    console.log('Response status:', response.status);
-    console.log('Response ok:', response.ok);
-
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('API Error:', errorData);
       throw new Error(
         errorData.errors?.[0]?.message || 'Failed to fetch listings'
       );
     }
 
     const data = await response.json();
-    console.log('Received data:', data);
-    console.log('Number of listings:', data.data.length);
-    console.log('Search term:', currentSearch);
 
     // Filter listings based on search term
     let filteredListings = data.data;
@@ -82,7 +72,6 @@ async function fetchListings() {
           (listing.seller &&
             listing.seller.name.toLowerCase().includes(searchTerm))
       );
-      console.log('Filtered listings:', filteredListings.length);
     }
 
     displayListings(filteredListings);
@@ -98,7 +87,6 @@ async function fetchListings() {
       listingCount.textContent = data.meta.totalCount;
     }
   } catch (error) {
-    console.error('Error in fetchListings:', error);
     if (listingsContainer) {
       listingsContainer.innerHTML = `
         <div class="col-span-full text-center py-8 text-red-500">
@@ -112,9 +100,6 @@ async function fetchListings() {
 // Display listings
 function displayListings(listings) {
   if (!listingsContainer) return;
-
-  console.log('Displaying listings:', listings.length);
-  console.log('First listing:', listings[0]);
 
   if (listings.length === 0) {
     listingsContainer.innerHTML = `
@@ -276,7 +261,6 @@ function displayListings(listings) {
               );
             }
           } catch (error) {
-            console.error('Error deleting listing:', error);
             alert('Failed to delete listing: ' + error.message);
           }
         }
@@ -368,45 +352,31 @@ async function createListing(formData) {
       throw new Error(data.errors?.[0]?.message || 'Failed to create listing');
     }
   } catch (error) {
-    console.error('Error creating listing:', error);
     return false;
   }
 }
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM Content Loaded');
-  console.log('Search button:', searchButton);
-  console.log('Search input:', searchInput);
-
   fetchListings();
 
   // Search
   if (searchButton && searchInput) {
-    console.log('Setting up search event listeners');
-
     const performSearch = () => {
-      console.log('Performing search');
       currentSearch = searchInput.value.trim();
-      console.log('Search value:', currentSearch);
       currentPage = 1;
       fetchListings();
     };
 
     searchButton.addEventListener('click', () => {
-      console.log('Search button clicked');
       performSearch();
     });
 
     searchInput.addEventListener('keypress', (e) => {
-      console.log('Key pressed in search input:', e.key);
       if (e.key === 'Enter') {
-        console.log('Enter key pressed, performing search');
         performSearch();
       }
     });
-  } else {
-    console.warn('Search elements not found:', { searchButton, searchInput });
   }
 
   // Sort

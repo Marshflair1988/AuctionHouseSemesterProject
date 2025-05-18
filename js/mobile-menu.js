@@ -1,174 +1,77 @@
 // Mobile menu functionality
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM Content Loaded - Mobile Menu');
-
+  // Get all required elements
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
-  const mobileAuth = document.getElementById('mobile-auth');
-  const mobileLogout = document.getElementById('mobile-logout');
+  const mobileAuthButtons = document.getElementById('mobile-auth-buttons');
+  const mobileUserMenu = document.getElementById('mobile-user-menu');
+  const mobileLogoutButton = document.getElementById('mobile-logout-button');
   const userMenu = document.getElementById('user-menu');
-  const authButtons = document.getElementById('auth-buttons');
+  const mainLogoutButton = document.getElementById('logout-button');
 
-  console.log('Elements found:', {
-    mobileMenuButton: !!mobileMenuButton,
-    mobileMenu: !!mobileMenu,
-    mobileAuth: !!mobileAuth,
-    mobileLogout: !!mobileLogout,
-    userMenu: !!userMenu,
-    authButtons: !!authButtons,
-  });
+  // Track menu state
+  let isExpanded = false;
 
-  if (mobileMenuButton && mobileMenu) {
-    console.log('Setting up mobile menu button click handler');
+  // Function to update mobile auth state
+  function updateMobileAuthState() {
+    if (!mobileAuthButtons || !mobileUserMenu) {
+      return;
+    }
 
-    // Toggle mobile menu
-    const toggleMobileMenu = () => {
-      console.log('Mobile menu button clicked');
-      const isExpanded =
-        mobileMenuButton.getAttribute('aria-expanded') === 'true';
-      console.log('Current expanded state:', isExpanded);
+    const isUserMenuHidden = userMenu?.classList.contains('hidden');
 
-      // Update button state
-      mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-
-      // Toggle menu with transition
-      if (isExpanded) {
-        mobileMenu.classList.add('hidden');
-        mobileMenuButton.focus();
-      } else {
-        mobileMenu.classList.remove('hidden');
-        // Focus first focusable element
-        const firstFocusable = mobileMenu.querySelector('a, button');
-        if (firstFocusable) {
-          firstFocusable.focus();
-        }
-      }
-
-      // Update icon
-      const icon = mobileMenuButton.querySelector('i');
-      if (icon) {
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-times');
-      }
-    };
-
-    mobileMenuButton.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleMobileMenu();
-    });
-
-    // Add keyboard support
-    mobileMenuButton.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleMobileMenu();
-      }
-    });
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (
-        !mobileMenu.classList.contains('hidden') &&
-        !mobileMenuButton.contains(e.target) &&
-        !mobileMenu.contains(e.target)
-      ) {
-        console.log('Click outside detected, closing menu');
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-        mobileMenu.classList.add('hidden');
-        mobileMenuButton.focus();
-
-        // Reset icon
-        const icon = mobileMenuButton.querySelector('i');
-        if (icon) {
-          icon.classList.remove('fa-times');
-          icon.classList.add('fa-bars');
-        }
-      }
-    });
-
-    // Handle keyboard navigation in mobile menu
-    mobileMenu.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        mobileMenuButton.setAttribute('aria-expanded', 'false');
-        mobileMenu.classList.add('hidden');
-        mobileMenuButton.focus();
-
-        // Reset icon
-        const icon = mobileMenuButton.querySelector('i');
-        if (icon) {
-          icon.classList.remove('fa-times');
-          icon.classList.add('fa-bars');
-        }
-      }
-    });
-  }
-
-  // Show/hide mobile auth menu based on user authentication state
-  function updateMobileAuth() {
-    console.log('Updating mobile auth state');
-    console.log('User menu hidden:', userMenu?.classList.contains('hidden'));
-
-    if (mobileAuth && userMenu && authButtons) {
-      if (userMenu.classList.contains('hidden')) {
-        console.log('User not logged in, showing auth buttons');
-        mobileAuth.classList.add('hidden');
-        authButtons.classList.remove('hidden');
-      } else {
-        console.log('User logged in, showing mobile auth menu');
-        mobileAuth.classList.remove('hidden');
-        authButtons.classList.add('hidden');
-      }
+    if (isUserMenuHidden) {
+      mobileAuthButtons.classList.remove('hidden');
+      mobileUserMenu.classList.add('hidden');
     } else {
-      console.log('Missing required elements for mobile auth:', {
-        mobileAuth: !!mobileAuth,
-        userMenu: !!userMenu,
-        authButtons: !!authButtons,
-      });
+      mobileAuthButtons.classList.add('hidden');
+      mobileUserMenu.classList.remove('hidden');
     }
   }
 
-  // Initial update
-  console.log('Performing initial mobile auth update');
-  updateMobileAuth();
+  // Set up mobile menu button click handler
+  if (mobileMenuButton && mobileMenu) {
+    mobileMenuButton.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+      mobileMenuButton.setAttribute('aria-expanded', isExpanded);
+      mobileMenu.classList.toggle('hidden');
+    });
 
-  // Update when auth state changes
-  const observer = new MutationObserver((mutations) => {
-    console.log('User menu mutation detected:', mutations);
-    updateMobileAuth();
-  });
+    // Close menu when clicking outside
+    document.addEventListener('click', (event) => {
+      if (
+        isExpanded &&
+        !mobileMenu.contains(event.target) &&
+        !mobileMenuButton.contains(event.target)
+      ) {
+        isExpanded = false;
+        mobileMenuButton.setAttribute('aria-expanded', 'false');
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  }
 
+  // Set up mutation observer for user menu
   if (userMenu) {
-    console.log('Setting up mutation observer for user menu');
+    const observer = new MutationObserver((mutations) => {
+      updateMobileAuthState();
+    });
+
     observer.observe(userMenu, {
       attributes: true,
       attributeFilter: ['class'],
     });
-  } else {
-    console.log('User menu element not found, cannot set up mutation observer');
   }
 
-  // Handle mobile logout
-  if (mobileLogout) {
-    console.log('Setting up mobile logout handler');
-    mobileLogout.addEventListener('click', () => {
-      console.log('Mobile logout clicked');
-      const logoutButton = document.getElementById('logout-button');
-      if (logoutButton) {
-        console.log('Triggering main logout button');
-        logoutButton.click();
-      } else {
-        console.log('Main logout button not found');
+  // Set up mobile logout handler
+  if (mobileLogoutButton && mainLogoutButton) {
+    mobileLogoutButton.addEventListener('click', () => {
+      if (mainLogoutButton) {
+        mainLogoutButton.click();
       }
     });
-
-    // Add keyboard support for mobile logout
-    mobileLogout.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        mobileLogout.click();
-      }
-    });
-  } else {
-    console.log('Mobile logout button not found');
   }
+
+  // Initial mobile auth state update
+  updateMobileAuthState();
 });

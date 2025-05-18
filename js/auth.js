@@ -192,7 +192,7 @@ async function authFetch(endpoint, options = {}) {
 }
 
 // Fetch and render featured listings on the homepage
-async function renderFeaturedListings() {
+async function fetchFeaturedListings() {
   const container = document.getElementById('featured-listings');
   if (!container) return;
   try {
@@ -204,11 +204,8 @@ async function renderFeaturedListings() {
         },
       }
     );
-    console.log('Featured listings API response:', response);
     const data = await response.json();
-    console.log('Featured listings parsed data:', data);
     const listings = data.data || [];
-    console.log('Listings array:', listings);
     container.innerHTML = '';
     listings.slice(0, 3).forEach((listing) => {
       const card = document.createElement('div');
@@ -248,7 +245,6 @@ async function renderFeaturedListings() {
       container.appendChild(card);
     });
   } catch (error) {
-    console.error('Error loading featured listings:', error);
     container.innerHTML =
       '<div class="text-red-600">Failed to load featured listings.</div>';
   }
@@ -260,7 +256,7 @@ if (
   window.location.pathname === '/' ||
   window.location.pathname === '/index.html'
 ) {
-  document.addEventListener('DOMContentLoaded', renderFeaturedListings);
+  document.addEventListener('DOMContentLoaded', fetchFeaturedListings);
 }
 
 export {
