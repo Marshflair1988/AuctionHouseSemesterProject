@@ -1,5 +1,16 @@
 import { API_BASE_URL, updateUser, updateUIForAuth } from './auth.js';
-import config from './config.js';
+
+// Show login error message
+function showLoginError(message) {
+  const errorMessage = document.getElementById('error-message');
+  const successMessage = document.getElementById('success-message');
+
+  if (errorMessage) {
+    errorMessage.textContent = message;
+    errorMessage.classList.remove('hidden');
+    if (successMessage) successMessage.classList.add('hidden');
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
@@ -17,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Noroff-API-Key': config.API_KEY,
+            'X-Noroff-API-Key': '7ae55a4b-8609-40fa-a8f6-a4967319e591',
           },
           body: JSON.stringify({ email, password }),
         });
@@ -34,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             {
               headers: {
                 Authorization: `Bearer ${data.data.accessToken}`,
-                'X-Noroff-API-Key': config.API_KEY,
+                'X-Noroff-API-Key': '7ae55a4b-8609-40fa-a8f6-a4967319e591',
               },
             }
           );
@@ -68,7 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error(data.errors?.[0]?.message || 'Login failed');
         }
       } catch (error) {
-        showLoginError(error.message || 'Login failed. Please try again.');
+        if (errorMessage) {
+          errorMessage.textContent =
+            error.message || 'Login failed. Please try again.';
+          errorMessage.classList.remove('hidden');
+          if (successMessage) successMessage.classList.add('hidden');
+        }
       }
     });
   }
