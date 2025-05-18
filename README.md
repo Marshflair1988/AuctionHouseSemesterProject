@@ -1,154 +1,171 @@
-# Auction House
+# BidHive Auction House
 
-A modern, responsive web application for managing and participating in online auctions. Built with HTML, CSS (Tailwind), and JavaScript, this platform provides a seamless experience for both buyers and sellers.
+A modern, responsive web application for online auctions, built with HTML, CSS, and JavaScript. BidHive provides a platform for users to browse, bid on, and create auction listings.
 
 ## Features
 
 - **User Authentication**
 
   - Secure login and registration system
-  - User profile management
-  - Session handling
+  - Profile management
+  - Credit system for bidding
+  - JWT-based authentication
 
 - **Auction Listings**
 
   - Browse active auctions
-  - Detailed listing views
-  - Real-time bid updates
+  - Featured listings on homepage
+  - Detailed item views
+  - Real-time bidding system
   - Search and filter functionality
-  - Category-based navigation
-
-- **Bidding System**
-
-  - Real-time bid placement
-  - Bid history tracking
-  - Automatic bid validation
-  - Current bid display
 
 - **User Dashboard**
 
+  - View and manage personal listings
+  - Track bids and auction status
+  - Credit balance management
   - Active bids tracking
-  - Won auctions history
-  - User statistics
-  - Profile management
 
 - **Responsive Design**
   - Mobile-first approach
-  - Responsive navigation
-  - Optimized for all screen sizes
-  - Touch-friendly interface
+  - Optimized for all device sizes
+  - Modern UI with Tailwind CSS
+  - Mobile navigation menu
 
 ## Tech Stack
 
-- **Frontend**
+- HTML5
+- CSS3 (with Tailwind CSS)
+- JavaScript (ES6+)
+- Font Awesome for icons
+- Noroff API for backend services
+- Netlify for deployment
 
-  - HTML5
-  - CSS3 with Tailwind CSS
-  - Vanilla JavaScript
-  - Responsive Design
+## Prerequisites
 
-- **Backend**
-  - Node.js
-  - Express.js
-  - RESTful API integration
+- A modern web browser (Chrome, Firefox, Safari, or Edge)
+- Git installed on your system
+- A Noroff student account for API access
+- Basic understanding of web development
 
-## Getting Started
+## Setup Instructions
 
-### Prerequisites
+### 1. Clone the Repository
 
-- Node.js (v14 or higher)
-- npm or yarn
+```bash
+git clone https://github.com/yourusername/BidHive.git
+cd BidHive
+```
 
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone [repository-url]
-   cd auction-house
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Set up API credentials:
-
-   - Copy `js/config.template.js` to `js/config.js`
-   - Replace `YOUR_API_KEY_HERE` with your Noroff API key
-   - Never commit `config.js` to version control
-
-4. Create a `.env` file in the root directory and add your environment variables:
-
-   ```
-   JWT_SECRET=your_jwt_secret
-   ```
-
-5. Start the development server:
-
-   ```bash
-   npm run dev
-   ```
-
-6. Open your browser and navigate to `http://localhost:3000`
-
-### API Credentials
-
-To get your Noroff API credentials:
+### 2. API Setup
 
 1. Log in to your Noroff student account
 2. Navigate to the API section
 3. Generate a new API key
-4. Copy the key and replace it in your `config.js` file
+4. Create a `.env` file in the root directory with the following content:
 
-**Important Security Notes:**
+```
+NOROFF_API_KEY=your_api_key_here
+```
 
-- Never commit your `config.js` file to version control
-- Keep your API key secure and don't share it publicly
-- If you accidentally commit your API key, rotate it immediately
+### 3. Environment Configuration
 
-### Deployment
+1. Create a `js/config.js` file with the following content:
 
-#### Netlify Deployment with Build Process
+```javascript
+const API_URL = 'https://api.noroff.dev/api/v1/auction';
+const API_KEY = process.env.NOROFF_API_KEY;
+```
 
-1. Push your code to GitHub
-2. Connect your repository to Netlify
-3. In Netlify's dashboard:
-   - Go to Site settings > Build & deploy > Environment
-   - Add environment variable:
-     - `NOROFF_API_KEY` = your Noroff API key
-4. Configure build settings in Netlify:
-   - Build command: `npm install && npm run build`
-   - Publish directory: `.` (root directory)
-5. Deploy your site
+### 4. Local Development
 
-#### Local Development
+1. Install a local development server (if you don't have one):
 
-1. Copy `js/config.template.js` to `js/config.js`
-2. Replace `YOUR_API_KEY_HERE` with your actual Noroff API key
-3. The application will use these credentials in development
+```bash
+npm install -g live-server
+```
+
+2. Start the development server:
+
+```bash
+live-server
+```
+
+3. Open your browser and navigate to `http://localhost:8080`
 
 ## Project Structure
 
 ```
-auction-house/
-├── pages/              # HTML pages
-├── js/                 # JavaScript files
-├── css/               # CSS files
-├── assets/            # Images and other static assets
-├── config/            # Configuration files
-└── public/            # Public assets
+BidHive/
+├── assets/
+│   ├── BidHive_Logo.png
+│   ├── default-avatar.png
+│   └── Goldwatch.png
+├── css/
+│   └── style.css
+├── js/
+│   ├── auth.js
+│   └── mobile-menu.js
+├── pages/
+│   ├── about.html
+│   ├── listings.html
+│   ├── login.html
+│   ├── profile.html
+│   └── register.html
+├── .env
+├── js/
+│   └── config.js
+└── index.html
 ```
 
-## Security
+## Deployment
 
-- JWT-based authentication for secure user sessions
-- API key authentication for Noroff API access
-- Basic input validation and sanitization
-- Secure storage of authentication tokens
-- Environment variable protection for sensitive data
+### Netlify Deployment
+
+1. Push your code to GitHub
+2. Connect your repository to Netlify
+3. Configure environment variables in Netlify:
+   - Go to Site settings > Build & deploy > Environment
+   - Add environment variable:
+     - `NOROFF_API_KEY` = your Noroff API key
+4. Deploy your site
+
+### Cache Control
+
+The application implements cache control headers to ensure fresh data:
+
+- No-cache headers for dynamic content
+- Cache-busting for static assets
+- ETag support for conditional requests
+
+## Common Issues and Solutions
+
+1. **API Connection Issues**
+
+   - Verify your API key is correct
+   - Check your network connection
+   - Ensure you're using a valid Noroff student email
+
+2. **Authentication Problems**
+
+   - Clear browser cache and cookies
+   - Ensure JWT token is being stored correctly
+   - Check browser console for error messages
+
+3. **Caching Issues**
+   - Hard refresh the page (Ctrl + F5)
+   - Clear browser cache
+   - Check if cache headers are properly set
+
+## Testing
+
+1. Create a test account using your Noroff student email
+2. Test the following features:
+   - User registration and login
+   - Creating new listings
+   - Placing bids
+   - Profile management
+   - Credit system
 
 ## Contributing
 
@@ -157,3 +174,16 @@ auction-house/
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## Security Notes
+
+- Never commit your `.env` file or `config.js` with API keys
+- Keep your API key secure and don't share it publicly
+- If you accidentally commit sensitive data, rotate your API key immediately
+- Use HTTPS for all API requests
+- Implement proper input validation and sanitization
+
+## Author
+
+Marsh Woolgar
+
