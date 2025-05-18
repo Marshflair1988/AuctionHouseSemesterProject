@@ -1,26 +1,12 @@
 {
-  "name": "auctionhousesemesterproject",
+  "name": "auction-house",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Auction House Project",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tailwindcss -i ./css/input.css -o ./css/style.css --watch",
-	  "build": "npx tailwindcss -i ./css/input.css -o ./css/style.css --minify"
+    "build": "node build.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Marshflair1988/AuctionHouseSemesterProject.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/Marshflair1988/AuctionHouseSemesterProject/issues"
-  },
-  "homepage": "https://github.com/Marshflair1988/AuctionHouseSemesterProject#readme",
-  "devDependencies": {
-    "tailwindcss": "^3.4.17"
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "path": "^0.12.7"
   }
 }

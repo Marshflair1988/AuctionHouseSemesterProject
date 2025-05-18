@@ -108,7 +108,27 @@ To get your Noroff API credentials:
 - Never commit your `config.js` file to version control
 - Keep your API key secure and don't share it publicly
 - If you accidentally commit your API key, rotate it immediately
-- Use environment variables for production deployments
+
+### Deployment
+
+#### Netlify Deployment with Build Process
+
+1. Push your code to GitHub
+2. Connect your repository to Netlify
+3. In Netlify's dashboard:
+   - Go to Site settings > Build & deploy > Environment
+   - Add environment variable:
+     - `NOROFF_API_KEY` = your Noroff API key
+4. Configure build settings in Netlify:
+   - Build command: `npm install && npm run build`
+   - Publish directory: `.` (root directory)
+5. Deploy your site
+
+#### Local Development
+
+1. Copy `js/config.template.js` to `js/config.js`
+2. Replace `YOUR_API_KEY_HERE` with your actual Noroff API key
+3. The application will use these credentials in development
 
 ## Project Structure
 
